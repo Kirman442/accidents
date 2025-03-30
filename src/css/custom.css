@@ -1,0 +1,311 @@
+/* Основные стили для приложения */
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    color: #f5f5f5;
+    background-color: #1a1a1a;
+}
+
+/* Панель управления */
+.controls {
+    width: 300px;
+    padding: 20px;
+    background-color: #2a2a2a;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+}
+
+.controls h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #f0f0f0;
+}
+
+.controls h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #d0d0d0;
+}
+
+/* Контейнер карты */
+.map-container {
+    flex: 1;
+    position: relative;
+}
+
+/* Селектор автобусов */
+.bus-selector {
+    margin-top: 20px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.bus-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.bus-buttons button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    /* transition: transform 0.2s, box-shadow 0.2s; */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.bus-buttons button:hover {
+    opacity: 0.9;
+    /* transform: translateY(-2px); */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.bus-buttons button.selected {
+    color: white;
+    /* transform: translateY(-1px); */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Анимация для кнопок при выборе */
+.bus-buttons button.animating {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        /* transform: scale(1) translateY(-1px); */
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+    }
+
+    50% {
+        /* transform: scale(1.1) translateY(-3px); */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35), 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* Кнопка выбора всех */
+.select-all button {
+    padding: 8px 12px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-weight: bold;
+    /* transition: all 0.3s; */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.select-all button:hover {
+    background-color: #0b7dda;
+    /* transform: translateY(-2px); */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Переключатель отображения */
+.toggle-container {
+    margin-top: 10px;
+}
+
+.toggle-container button {
+    padding: 10px 15px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: bold;
+    /* transition: all 0.3s; */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-container button.active {
+    background-color: #4caf50;
+}
+
+.toggle-container button:hover {
+    opacity: 0.9;
+    /* transform: translateY(-2px); */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Легенда */
+.legend {
+    margin-top: 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+    background-color: #2a2a2a;
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.legend-items {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 4px;
+    /* transition: all 0.2s; */
+}
+
+.legend-item:hover {
+    background-color: #3a3a3a;
+    /* transform: translateX(5px); */
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Состояния загрузки и ошибки */
+.loading,
+.error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 24px;
+    color: #110101;
+    background-color: #ebe5e5;
+}
+
+.loading {
+    background-color: #e7e2e2;
+}
+
+.error {
+    color: #f44336;
+    background-color: #1a1a1a;
+}
+
+/* Стили для тёмной карты */
+:global(.leaflet-container) {
+    background-color: #303030;
+}
+
+:global(.dark-map) {
+    filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+
+:global(.leaflet-popup-content-wrapper),
+:global(.leaflet-popup-tip) {
+    background-color: #333;
+    color: #f0f0f0;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
+}
+
+/* Анимация для линий маршрутов */
+@keyframes linePulse {
+
+    0%,
+    100% {
+        stroke-width: 4;
+        stroke-opacity: 0.8;
+        filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.1));
+    }
+
+    50% {
+        stroke-width: 6;
+        stroke-opacity: 1;
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+    }
+}
+
+:global(.pulse-line) {
+    animation: linePulse 1.5s ease-in-out infinite;
+}
+
+/* Добавляем плавные переходы для всех элементов */
+* {
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s, opacity 0.3s;
+}
+
+/* Добавьте этот файл как отдельный CSS или вставьте его содержимое в head документа */
+
+Стили для тёмной темы Leaflet.leaflet-container {
+    background-color: #303030 !important;
+}
+
+.leaflet-tile {
+    filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7) !important;
+}
+
+.leaflet-control-zoom a {
+    background-color: #333 !important;
+    color: #f0f0f0 !important;
+}
+
+.leaflet-control-zoom a:hover {
+    background-color: #444 !important;
+}
+
+.leaflet-control-attribution {
+    background-color: rgba(30, 30, 30, 0.8) !important;
+    color: #999 !important;
+}
+
+.leaflet-control-attribution a {
+    color: #aaa !important;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    background-color: #333 !important;
+    color: #f0f0f0 !important;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+.leaflet-bar {
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65) !important;
+    border-radius: 4px !important;
+}
+
+.leaflet-touch .leaflet-bar {
+    border: 2px solid rgba(70, 70, 70, 0.85) !important;
+}
+
+.leaflet-bar a.leaflet-disabled {
+    background-color: #222 !important;
+    color: #888 !important;
+}
+
+.maplibregl-ctrl-attrib a {
+    color: rgb(144 144 144 / 75%);
+    text-decoration: none;
+}
+
+.maplibregl-ctrl-attrib.maplibregl-compact {
+    background-color: #303030;
+    color: rgb(144 144 144 / 75%);
+}
