@@ -18,10 +18,10 @@ The road traffic accident statistics record all accidents involving personal inj
 
 ## Explanatory notes
 - Accident with passenger car: accident in which at least one passenger car was involved.
-- Accident with bicycle (bic.): accident in which at least one bicycle was involved.
-- Accident with pedestrian (ped.): accident in which at least one pedestrian was involved.
-- Accident with motorcycle (m.cycle): accident in which at least one motorcycle (including motor-assisted bicycle, scooter) was involved.
-- Accident with goods road vehicle (lorries): accident in which at least one delivery van or motor lorry with a total weight of more than 3.5 tonnes, a motor lorry with a container for dangerous goods on the loading area or with a special body, a semi-trailer truck or other tractor was involved (for 2017, this category is included under accident with other).
+- Accident with bicycle: accident in which at least one bicycle was involved.
+- Accident with pedestrian: accident in which at least one pedestrian was involved.
+- Accident with motorcycle: accident in which at least one motorcycle (including motor-assisted bicycle, scooter) was involved.
+- Accident with goods road vehicle: accident in which at least one delivery van or motor lorry with a total weight of more than 3.5 tonnes, a motor lorry with a container for dangerous goods on the loading area or with a special body, a semi-trailer truck or other tractor was involved (for 2017, this category is included under accident with other).
 - Accident with other: accident in which at least one means of transport not mentioned above was involved, e.g. a bus or a tram
 
 - Persons killed: persons who died within 30 days as a result of the accident.
