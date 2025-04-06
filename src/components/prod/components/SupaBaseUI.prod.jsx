@@ -203,3 +203,258 @@ const SupaBaseUI = () => {
 };
 
 export default SupaBaseUI;
+
+// Вариант с использованием ParquetLoader
+
+// const SupaBaseUI = () => {
+//     const [loading, setLoading] = useState(false);
+//     const [parquetData, setParquetData] = useState([]);
+//     const [loadTime, setLoadTime] = useState("");
+//     const [isMapReady, setIsMapReady] = useState(false);
+//     const [elevation, setElevation] = useState(1); // Начинаем с 1
+//     const [showHex, setShowHex] = useState(true);
+//     const [filters, setFilters] = useState({
+//         uland: null,
+//         uwochentag: null,
+//         ukategorie: null,
+//         ist_rad: null,
+//         ist_pkw: null,
+//         ist_fuss: null
+//     });
+//     const INITIAL_VIEW_STATE = {
+//         longitude: 10.4,
+//         latitude: 51.1,
+//         zoom: 5.5,
+//         maxZoom: 16,
+//         minZoom: 6,
+//         pitch: 33,
+//         bearing: 0
+//     };
+//     const testFiles = [
+//         {
+//             name: 'Данные с brotli',
+//             url: 'https://cdn.jsdelivr.net/gh/Kirman442/deckgl@main/geoarrow/accidents_brotli.parquet'
+//         },
+//         {
+//             name: 'Данные без сжатия',
+//             url: 'https://cdn.jsdelivr.net/gh/Kirman442/deckgl@main/geoarrow/accidents_de_brotli.parquet'
+//         }
+//     ];
+
+//     const [selectedFile, setSelectedFile] = useState(testFiles[1]);
+
+//     const loadParquet = async () => {
+//         setLoading(true);
+//         try {
+//             const startTime = performance.now();
+
+//             const rawData = await load(
+//                 selectedFile.url,
+//                 ParquetLoader,
+//                 {
+//                     parquet: {
+//                         type: 'array-row-table',  // Самый простой формат
+//                         preserveBinary: true       // Не преобразовывать бинарные данные
+//                     }
+//                 }
+//             );
+
+
+//             // Преобразование данных в нужный формат
+//             const formattedData = rawData.data.map(item => ({
+//                 latitude: parseFloat(item.YGCSWGS84),
+//                 longitude: parseFloat(item.XGCSWGS84),
+//                 properties: {
+//                     ist_fuss: item.IstFuss,
+//                     ist_pkw: item.IstPKW,
+//                     ist_rad: item.IstRad,
+//                     oid: item.OID_,
+//                     ukategorie: item.UKATEGORIE,
+//                     uwochentag: item.UWOCHENTAG,
+//                     uland: item.ULAND,
+//                 }
+//             }));
+
+//             const calculateMemoryUsage = (data) => {
+//                 const jsonString = JSON.stringify(data);
+//                 const sizeInBytes = new Blob([jsonString]).size;
+//                 return (sizeInBytes / (1024 * 1024)).toFixed(2) + " МБ";
+//             };
+
+//             setParquetData(formattedData);
+//             // console.log('Formatted Features:', formattedData.length); // Логируем все данные
+//             // console.log("Размер в памяти:", calculateMemoryUsage(formattedData));
+
+//             const endTime = performance.now();
+//             setLoadTime(`${(endTime - startTime).toFixed(2)} мс`);
+
+//             // console.log(`Parquet loaded in ${(endTime - startTime).toFixed(2)}ms`);
+//             return formattedData;
+//         } catch (error) {
+//             console.error('Error loading parquet file:', error);
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
+
+//     // 2.  применяем фильтры
+//     const filteredData = useMemo(() => {
+//         if (!parquetData || parquetData.length === 0) return [];
+
+//         if (!filters.uland && !filters.uwochentag && !filters.ukategorie && !filters.ist_rad &&
+//             !filters.ist_pkw && !filters.ist_fuss) {
+//             return parquetData.map(f => ({ latitude: f.latitude, longitude: f.longitude }));
+//         }
+
+//         return parquetData
+//             .filter(f => {
+//                 const props = f.properties;
+//                 const landMatch = !filters.uland || Number(props.uland) === Number(filters.uland);
+//                 const dayMatch = !filters.uwochentag || Number(props.uwochentag) === Number(filters.uwochentag);
+//                 const catMatch = !filters.ukategorie || Number(props.ukategorie) === Number(filters.ukategorie);
+//                 const radMatch = !filters.ist_rad || Number(props.ist_rad) === Number(filters.ist_rad);
+//                 const pkwMatch = !filters.ist_pkw || Number(props.ist_pkw) === Number(filters.ist_pkw);
+//                 const fussMatch = !filters.ist_fuss || Number(props.ist_fuss) === Number(filters.ist_fuss);
+//                 return landMatch && dayMatch && catMatch && radMatch && pkwMatch && fussMatch;
+//             })
+//             .map(f => ({ latitude: f.latitude, longitude: f.longitude }));
+//     }, [parquetData, filters]);
+//     // Инициализация карты
+//     useEffect(() => {
+//         setIsMapReady(true);
+
+//         if (selectedFile) loadParquet();
+
+//         const timer = setTimeout(() => setElevation(50), 4000);
+//         return () => clearTimeout(timer);
+//     }, [selectedFile]);
+
+
+//     const layers = useMemo(() => {
+//         const commonProps = {
+//             data: filteredData,
+//             getPosition: d => [d.longitude, d.latitude],
+//             colorRange,
+//             updateTriggers: {
+//                 getPosition: [filteredData.length],
+//                 getColorValue: [filters],
+//                 elevationScale: [elevation]
+//             }
+//         };
+//         // Определчем слои и их переключение
+//         return showHex
+//             ? [new HexagonLayer({
+//                 id: 'hexagon-layer',
+//                 ...commonProps,
+//                 coverage: .8,
+//                 gpuAggregation: true,
+//                 radius: 1000,
+//                 elevationRange: [0, 3000],
+//                 elevationScale: elevation,
+//                 extruded: true,
+//                 pickable: true,
+//                 upperPercentile: 100,
+//                 material: {
+//                     ambient: 0.64,
+//                     diffuse: 0.6,
+//                     shininess: 32,
+//                     specularColor: [51, 51, 51]
+//                 },
+//                 transitions: {
+//                     elevationScale: 3000
+//                 },
+//             })]
+//             : [new HeatmapLayer({
+//                 id: 'heatmap-layer',
+//                 ...commonProps,
+//                 radiusPixels: 50,
+//                 intensity: 1,
+//                 threshold: 0.15
+//             })];
+//     }, [filteredData, showHex, elevation, filters]);
+
+// function getTooltip(info) {
+//     // 1. Проверка наличия самого info и его структуры
+//     if (!info || typeof info !== 'object') {
+//         return null;
+//     }
+
+//     const hasValidCoords = (
+//         Array.isArray(info.coordinate) &&
+//         info.coordinate.length === 2 &&
+//         !isNaN(info.coordinate[0]) &&
+//         !isNaN(info.coordinate[1]) &&
+//         Math.abs(info.coordinate[0]) <= 180 &&
+//         Math.abs(info.coordinate[1]) <= 90
+//     );
+
+//     const hasValidPixel = (
+//         Array.isArray(info.pixel) &&
+//         info.pixel.length === 2 &&
+//         info.pixel[0] >= 0 &&
+//         info.pixel[1] >= 0
+//     );
+
+//     if (!hasValidCoords || !hasValidPixel) {
+//         return null;
+//     }
+
+//     const count = info.object?.points?.length || info.object?.count || 0;
+//     if (count <= 0) {
+//         return null;
+//     }
+
+//     const accidentText = count === 1 ? 'Unfall' : 'Unfälle';
+
+//     return {
+//         html: `<div className="tooltip-container">${count} ${accidentText}</div>`,
+//     };
+// }
+
+//     return (
+//         <div style={{ display: 'flex', height: '70vh' }}>
+//             {isMapReady && (
+//                 <DeckGL
+//                     initialViewState={INITIAL_VIEW_STATE}
+//                     controller={true}
+//                     layers={layers}
+//                     effects={[lightingEffect]}
+//                 // getTooltip={getTooltip}
+//                 >
+//                     <Map reuseMaps mapStyle={mapStyle} />
+
+//                     {loading && (
+//                         <div style={{
+//                             position: 'absolute',
+//                             top: '20px',
+//                             left: '50%',
+//                             transform: 'translateX(-50%)',
+//                             background: 'rgba(0,0,0,0.7)',
+//                             color: 'white',
+//                             padding: '10px',
+//                             borderRadius: '5px',
+//                             zIndex: 100
+//                         }}>
+//                             Загрузка данных...
+//                         </div>
+//                     )}
+
+//                     <LegendPanel
+//                         showHex={showHex}
+//                         setShowHex={setShowHex}
+//                         filters={filters}
+//                         setFilters={setFilters}
+//                         dataStats={{
+//                             total: parquetData.length,
+//                             filtered: filteredData.length
+//                         }}
+//                     />
+//                     <div className="rotate-shift">Hold down shift to rotate <br />Zum Drehen Umschalttaste gedrückt halten</div>
+//                 </DeckGL>
+//             )}
+//         </div>
+//     );
+// };
+
+
+// export default SupaBaseUI;
