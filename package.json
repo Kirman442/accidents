@@ -18,6 +18,8 @@
     "fullreset": "npm run hardclean && npm install"
   },
   "dependencies": {
+    "@loaders.gl/core": "^4.3.3",
+    "@loaders.gl/parquet": "^4.3.3",
     "@supabase/supabase-js": "^2.49.3",
     "@vis.gl/react-maplibre": "^8.0.1",
     "deck.gl": "^9.1.8",
