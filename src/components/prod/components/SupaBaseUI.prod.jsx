@@ -204,8 +204,9 @@ const SupaBaseUI = () => {
 
 export default SupaBaseUI;
 
-// Вариант с использованием ParquetLoader
-
+// // Вариант с использованием ParquetLoader
+// import { ParquetLoader } from '@loaders.gl/parquet';
+// import { load } from '@loaders.gl/core';
 // const SupaBaseUI = () => {
 //     const [loading, setLoading] = useState(false);
 //     const [parquetData, setParquetData] = useState([]);
@@ -236,7 +237,7 @@ export default SupaBaseUI;
 //             url: 'https://cdn.jsdelivr.net/gh/Kirman442/deckgl@main/geoarrow/accidents_brotli.parquet'
 //         },
 //         {
-//             name: 'Данные без сжатия',
+//             name: 'Данные с brotli ', //OID_;ULAND;UWOCHENTAG;UKATEGORIE;IstRad;IstPKW;IstFuss;XGCSWGS84;YGCSWGS84
 //             url: 'https://cdn.jsdelivr.net/gh/Kirman442/deckgl@main/geoarrow/accidents_de_brotli.parquet'
 //         }
 //     ];
@@ -253,8 +254,8 @@ export default SupaBaseUI;
 //                 ParquetLoader,
 //                 {
 //                     parquet: {
-//                         type: 'array-row-table',  // Самый простой формат
-//                         preserveBinary: true       // Не преобразовывать бинарные данные
+//                         type: 'array-row-table',
+//                         preserveBinary: true
 //                     }
 //                 }
 //             );
@@ -373,43 +374,43 @@ export default SupaBaseUI;
 //             })];
 //     }, [filteredData, showHex, elevation, filters]);
 
-// function getTooltip(info) {
-//     // 1. Проверка наличия самого info и его структуры
-//     if (!info || typeof info !== 'object') {
-//         return null;
+//     function getTooltip(info) {
+//         // 1. Проверка наличия самого info и его структуры
+//         if (!info || typeof info !== 'object') {
+//             return null;
+//         }
+
+//         const hasValidCoords = (
+//             Array.isArray(info.coordinate) &&
+//             info.coordinate.length === 2 &&
+//             !isNaN(info.coordinate[0]) &&
+//             !isNaN(info.coordinate[1]) &&
+//             Math.abs(info.coordinate[0]) <= 180 &&
+//             Math.abs(info.coordinate[1]) <= 90
+//         );
+
+//         const hasValidPixel = (
+//             Array.isArray(info.pixel) &&
+//             info.pixel.length === 2 &&
+//             info.pixel[0] >= 0 &&
+//             info.pixel[1] >= 0
+//         );
+
+//         if (!hasValidCoords || !hasValidPixel) {
+//             return null;
+//         }
+
+//         const count = info.object?.points?.length || info.object?.count || 0;
+//         if (count <= 0) {
+//             return null;
+//         }
+
+//         const accidentText = count === 1 ? 'Unfall' : 'Unfälle';
+
+//         return {
+//             html: `<div className="tooltip-container">${count} ${accidentText}</div>`,
+//         };
 //     }
-
-//     const hasValidCoords = (
-//         Array.isArray(info.coordinate) &&
-//         info.coordinate.length === 2 &&
-//         !isNaN(info.coordinate[0]) &&
-//         !isNaN(info.coordinate[1]) &&
-//         Math.abs(info.coordinate[0]) <= 180 &&
-//         Math.abs(info.coordinate[1]) <= 90
-//     );
-
-//     const hasValidPixel = (
-//         Array.isArray(info.pixel) &&
-//         info.pixel.length === 2 &&
-//         info.pixel[0] >= 0 &&
-//         info.pixel[1] >= 0
-//     );
-
-//     if (!hasValidCoords || !hasValidPixel) {
-//         return null;
-//     }
-
-//     const count = info.object?.points?.length || info.object?.count || 0;
-//     if (count <= 0) {
-//         return null;
-//     }
-
-//     const accidentText = count === 1 ? 'Unfall' : 'Unfälle';
-
-//     return {
-//         html: `<div className="tooltip-container">${count} ${accidentText}</div>`,
-//     };
-// }
 
 //     return (
 //         <div style={{ display: 'flex', height: '70vh' }}>
