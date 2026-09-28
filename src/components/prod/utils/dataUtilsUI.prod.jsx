@@ -31,25 +31,88 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 //     return featuresWithCoords;
 // }
 
+// // Функция загрузки координат чанками  2я версия с фильтром по uland
+// async function fetchGeoData(partitionName, batchSize = 20000) {
+//     let offset = 0;
+//     const featuresWithCoords = [];
+
+//     // unfallatlas_uland_01 -> 1
+//     // unfallatlas_uland_12 -> 12
+//     const uland = parseInt(
+//         partitionName.replace('unfallatlas_uland_', ''),
+//         10
+//     );
+
+//     while (true) {
+//         const { data, error } = await supabase
+//             .from('unfallatlas_partitioned')
+//             .select('oid, xgcswgs84, ygcswgs84')
+//             .eq('uland', uland)
+//             .order('oid', { ascending: true })
+//             .range(offset, offset + batchSize - 1);
+
+//         if (error) {
+//             console.error(
+//                 `Ошибка загрузки координат для ULand ${uland}:`,
+//                 error
+//             );
+//             throw error;
+//         }
+//         console.log(
+//             `ULand ${uland}: offset=${offset}, requested=${batchSize}, received=${data.length}`
+//         );
+
+//         if (!data.length) break;
+
+//         const parsedFeatures = data.map(item => ({
+//             type: 'Feature',
+//             properties: {
+//                 oid: item.oid
+//             },
+//             geometry: {
+//                 coordinates: [
+//                     item.xgcswgs84,
+//                     item.ygcswgs84
+//                 ],
+//                 type: 'Point'
+//             },
+//             latitude: parseFloat(item.ygcswgs84),
+//             longitude: parseFloat(item.xgcswgs84),
+//         }));
+
+//         featuresWithCoords.push(...parsedFeatures);
+
+//         offset += batchSize;
+//     }
+
+//     return featuresWithCoords;
+// }
+
+
 // Функция загрузки координат чанками
 async function fetchGeoData(partitionName, batchSize = 20000) {
     let offset = 0;
+    let totalCount = null;
     const featuresWithCoords = [];
 
-    // unfallatlas_uland_01 -> 1
-    // unfallatlas_uland_12 -> 12
     const uland = parseInt(
         partitionName.replace('unfallatlas_uland_', ''),
         10
     );
 
-    while (true) {
-        const { data, error } = await supabase
+    while (totalCount === null || offset < totalCount) {
+        const query = supabase
             .from('unfallatlas_partitioned')
-            .select('oid, xgcswgs84, ygcswgs84')
+            .select(
+                'oid, xgcswgs84, ygcswgs84',
+                // Count нужен только при первом запросе
+                offset === 0 ? { count: 'exact' } : undefined
+            )
             .eq('uland', uland)
             .order('oid', { ascending: true })
             .range(offset, offset + batchSize - 1);
+
+        const { data, error, count } = await query;
 
         if (error) {
             console.error(
@@ -57,6 +120,15 @@ async function fetchGeoData(partitionName, batchSize = 20000) {
                 error
             );
             throw error;
+        }
+
+        // Первый запрос сообщает точное количество строк земли
+        if (totalCount === null) {
+            totalCount = count ?? 0;
+
+            console.log(
+                `ULand ${uland}: всего ${totalCount} записей`
+            );
         }
 
         if (!data.length) break;
@@ -79,7 +151,12 @@ async function fetchGeoData(partitionName, batchSize = 20000) {
 
         featuresWithCoords.push(...parsedFeatures);
 
-        offset += batchSize;
+        // Сдвигаемся на реально полученное количество
+        offset += data.length;
+
+        console.log(
+            `ULand ${uland}: загружено ${offset} из ${totalCount}`
+        );
     }
 
     return featuresWithCoords;
@@ -108,41 +185,94 @@ async function fetchGeoData(partitionName, batchSize = 20000) {
 //     return allAttributes; // Массив объектов { oid, uwochentag, ukategorie... }
 // }
 
-// Функция загрузки атрибутов чанками
+// // Функция загрузки атрибутов чанками 2я версия с фильтром по uland
+// async function fetchAttributesByRange(partitionName, batchSize = 20000) {
+//     let offset = 0;
+//     const allAttributes = [];
+
+//     // unfallatlas_uland_01 -> 1
+//     // unfallatlas_uland_12 -> 12
+//     const uland = parseInt(
+//         partitionName.replace('unfallatlas_uland_', ''),
+//         10
+//     );
+
+//     while (true) {
+//         const { data, error } = await supabase
+//             .from('unfallatlas_partitioned')
+//             .select(
+//                 'oid, uland, uwochentag, ukategorie, ist_rad, ist_pkw, ist_fuss'
+//             )
+//             .eq('uland', uland)
+//             .order('oid', { ascending: true })
+//             .range(offset, offset + batchSize - 1);
+
+//         if (error) {
+//             console.error(
+//                 `Ошибка при загрузке атрибутов для ULand ${uland}:`,
+//                 error
+//             );
+//             throw error;
+//         }
+
+//         if (!data.length) break;
+
+//         allAttributes.push(...data);
+
+//         offset += batchSize;
+//     }
+
+//     return allAttributes;
+// }
+
 async function fetchAttributesByRange(partitionName, batchSize = 20000) {
     let offset = 0;
+    let totalCount = null;
     const allAttributes = [];
 
-    // unfallatlas_uland_01 -> 1
-    // unfallatlas_uland_12 -> 12
     const uland = parseInt(
         partitionName.replace('unfallatlas_uland_', ''),
         10
     );
 
-    while (true) {
-        const { data, error } = await supabase
+    while (totalCount === null || offset < totalCount) {
+        const query = supabase
             .from('unfallatlas_partitioned')
             .select(
-                'oid, uland, uwochentag, ukategorie, ist_rad, ist_pkw, ist_fuss'
+                'oid, uland, uwochentag, ukategorie, ist_rad, ist_pkw, ist_fuss',
+                offset === 0 ? { count: 'exact' } : undefined
             )
             .eq('uland', uland)
             .order('oid', { ascending: true })
             .range(offset, offset + batchSize - 1);
 
+        const { data, error, count } = await query;
+
         if (error) {
             console.error(
-                `Ошибка при загрузке атрибутов для ULand ${uland}:`,
+                `Ошибка загрузки атрибутов для ULand ${uland}:`,
                 error
             );
             throw error;
+        }
+
+        if (totalCount === null) {
+            totalCount = count ?? 0;
+
+            console.log(
+                `Attributes ULand ${uland}: всего ${totalCount} записей`
+            );
         }
 
         if (!data.length) break;
 
         allAttributes.push(...data);
 
-        offset += batchSize;
+        offset += data.length;
+
+        console.log(
+            `Attributes ULand ${uland}: загружено ${offset} из ${totalCount}`
+        );
     }
 
     return allAttributes;

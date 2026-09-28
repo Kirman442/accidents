@@ -186,7 +186,7 @@ const SupaBaseUI = () => {
                 <div className="rotate-shift">Hold down shift to rotate <br />Zum Drehen Umschalttaste gedrückt halten</div>
 
             </DeckGL>
-            {/* <div style={{ position: 'absolute', top: 20, left: 20, backgroundColor: 'white', padding: 10, borderRadius: 5, zIndex: 1 }}>
+            <div style={{ position: 'absolute', top: 20, left: 20, backgroundColor: 'white', padding: 10, borderRadius: 5, zIndex: 1 }}>
                 <h1>Тестирование загрузки данных</h1>
                 {loading && <p>Загрузка геоданных...</p>}
                 {!loading && initialFeatures.length > 0 && (
@@ -197,7 +197,7 @@ const SupaBaseUI = () => {
                     <p>Атрибуты загружены и объединены за: {fullLoadTime !== null ? fullLoadTime.toFixed(2) : '...'} секунд. Количество: {fullFeatures.length}</p>
                 )}
                 {errors.global && <p style={{ color: 'red' }}>Ошибка: {errors.global.message}</p>}
-            </div> */}
+            </div>
         </div>
     );
 };
