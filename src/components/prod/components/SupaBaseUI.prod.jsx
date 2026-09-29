@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import DeckGL from '@deck.gl/react';
 import { Map } from '@vis.gl/react-maplibre';
 import { HexagonLayer, HeatmapLayer } from '@deck.gl/aggregation-layers';
+import { ScatterplotLayer } from '@deck.gl/layers';
 import { usePartitionLoader } from '../utils/dataUtilsUI.prod'; //fetchFilteredData,
 import { lightingEffect, colorRange } from '../utils/SupabaseEffects.prod';
 import LegendPanel from '../utils/LegendPanel.prod.jsx';
@@ -31,16 +32,51 @@ const SupaBaseUI = () => {
     const [renderFullData, setRenderFullData] = useState(false);
 
     useEffect(() => {
+
         const loadData = async () => {
+
             setStartTime(performance.now());
-            const partitions = Array.from({ length: 16 }, (_, i) => `unfallatlas_uland_${String(i + 1).padStart(2, '0')}`);
+
+            const partitions = Array.from(
+                { length: 16 },
+                (_, i) =>
+                    `unfallatlas_uland_${String(i + 1).padStart(2, '0')}`
+            );
+
             await loadPartitions(partitions);
         };
 
+
         loadData();
-        const timer = setTimeout(() => setElevation(50), 2500);
-        return () => clearTimeout(timer);
+
+
+        // const timer =
+        //     setTimeout(
+        //         () => setElevation(50),
+        //         2500
+        //     );
+
+
+        // return () =>
+        //     clearTimeout(timer);
+
     }, [loadPartitions]);
+    useEffect(() => {
+
+        if (!loading && initialFeatures.length > 0) {
+
+            setElevation(0);
+
+            const timer = setTimeout(() => {
+                setElevation(50);
+            }, 100);
+
+            return () => {
+                clearTimeout(timer);
+            };
+        }
+
+    }, [loading, initialFeatures.length]);
 
     useEffect(() => {
         if (fullFeatures && fullFeatures.length > 0) {
@@ -71,42 +107,136 @@ const SupaBaseUI = () => {
     }, [dataToRender, filters]);
 
     const layers = useMemo(() => {
+
+        // =========================================================
+        // 1. GEO ЕЩЁ ЗАГРУЖАЮТСЯ
+        //
+        // Пока progressive loading продолжается,
+        // отображаем координаты простыми точками.
+        //
+        // HexagonLayer / HeatmapLayer в этот момент
+        // вообще НЕ создаются.
+        // =========================================================
+
+        if (loading) {
+
+            return [
+                new ScatterplotLayer({
+                    id: 'progressive-points-layer',
+
+                    data: filteredData,
+
+                    getPosition: d => [
+                        d.longitude,
+                        d.latitude
+                    ],
+
+                    // Размер точки в пикселях.
+                    radiusUnits: 'pixels',
+                    getRadius: 1,
+
+                    // Пока просто один постоянный цвет.
+                    getFillColor: [255, 140, 0, 180],
+
+                    filled: true,
+                    stroked: false,
+
+                    // Во время загрузки tooltip для отдельных
+                    // точек нам не нужен.
+                    pickable: false
+                })
+            ];
+        }
+
+
+        // =========================================================
+        // 2. GEO ПОЛНОСТЬЮ ЗАГРУЖЕНЫ
+        //
+        // loading === false
+        //
+        // Теперь можно один раз агрегировать полный набор.
+        // =========================================================
+
         const commonProps = {
+
             data: filteredData,
-            getPosition: d => [d.longitude, d.latitude],
-            colorRange,
-            updateTriggers: {
-                getPosition: [filteredData ? filteredData.length : 0],
-                // getColorValue might depend on filters or other attributes
-                elevationScale: [elevation]
-            }
+
+            getPosition: d => [
+                d.longitude,
+                d.latitude
+            ],
+
+            colorRange
         };
 
-        return showHex ? [
-            new HexagonLayer({
-                id: 'hexagon-layer',
-                ...commonProps,
-                coverage: .8,
-                gpuAggregation: true,
-                radius: 1000,
-                elevationRange: [1, 3000],
-                elevationScale: elevation,
-                extruded: true,
-                pickable: true,
-                upperPercentile: 100,
-                material: { ambient: 0.64, diffuse: 0.6, shininess: 32, specularColor: [51, 51, 51] },
-                transitions: { elevationScale: 3000 },
-            })
-        ] : [
+
+        // =========================================================
+        // HEXAGON
+        // =========================================================
+
+        if (showHex) {
+
+            return [
+                new HexagonLayer({
+                    id: 'hexagon-layer',
+
+                    ...commonProps,
+
+                    coverage: 0.8,
+
+                    gpuAggregation: true,
+
+                    radius: 1000,
+
+                    elevationRange: [1, 3000],
+
+                    elevationScale: elevation,
+
+                    extruded: true,
+
+                    pickable: true,
+
+                    upperPercentile: 100,
+
+                    material: {
+                        ambient: 0.64,
+                        diffuse: 0.6,
+                        shininess: 32,
+                        specularColor: [51, 51, 51]
+                    },
+
+                    transitions: {
+                        elevationScale: 3000
+                    }
+                })
+            ];
+        }
+
+
+        // =========================================================
+        // HEATMAP
+        // =========================================================
+
+        return [
             new HeatmapLayer({
                 id: 'heatmap-layer',
+
                 ...commonProps,
+
                 radiusPixels: 35,
+
                 intensity: 1.3,
+
                 threshold: 0.15
             })
         ];
-    }, [filteredData, showHex, elevation /*, filters */]); // filteredData already depends on filters
+
+    }, [
+        filteredData,
+        showHex,
+        elevation,
+        loading
+    ]);
 
     function getTooltip(info) {
         // 1. Проверка наличия самого info и его структуры
