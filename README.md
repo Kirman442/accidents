@@ -30,3 +30,7 @@ See docs/loader-audit.md and docs/validation.md for findings and verified result
 ## Analytics preparation
 
 See docs/analytics-dataset.md for local preparation of Unfallatlas 2020-2025 and KBA FZ 1 snapshots 2020-2026. Generated datasets stay under ignored data/; preparation does not modify Supabase or the published map.
+
+## Binary data preparation
+
+Run RUN_PREPARE_BINARY.cmd for local desktop export of the audited dataset to Parquet and Arrow. See docs/binary-dataset.md for compression profiles, five-decimal runtime coordinates, full-precision archives, validation and recorded loader proposals. No database or production changes.
