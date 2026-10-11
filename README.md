@@ -50,3 +50,9 @@ See README_01_step_Loader_and_cache.md for the step report and archive workflow,
 The file page now starts with a 26 KB public summary bundle: annual Unfallatlas totals for 2020–2025, severity, overlapping participant groups, land comparisons and crashes involving Pkw per 10,000 registered Pkw. All 119 national/land fleet snapshots from 2020–2026 are included. The overview remains available independently of map loading and LRU clearing. Selected land persists when switching year/source/budget.
 
 Regenerate the small tracked public bundle with `node scripts/prepare-overview.mjs <complete binary export folder>`, then test and build. Full source datasets stay outside Git in UAD_data. See README_02_step_Overview_and_fleet.md for inputs, checksum validation, formulas, browser checks and the local archive `02_step_Overview_and_fleet.zip`. Arbitrary combined filters remain step 03; publication requires separate approval.
+
+## Step 03 — Analytics mockups (2026-10-11)
+
+Standalone review screens are saved in `prototypes/overview-mockup.html` and `prototypes/time-mockup.html`. The second screen uses verified joint time aggregates, calendar-adjusted weekday/weekend profiles and participant/period selection. These are design prototypes; the application loader and map remain at step 02.
+
+The proposed generic filter implementation was deferred pending analytics decisions. See `docs/analytics-candidates.md` for the appendable candidate register and `README_03_step_Analytics_mockups.md` for scope, data checks and local archive `03_step_Analytics_mockups.zip`.
