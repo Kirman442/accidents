@@ -34,3 +34,7 @@ See docs/analytics-dataset.md for local preparation of Unfallatlas 2020-2025 and
 ## Binary data preparation
 
 Run RUN_PREPARE_BINARY.cmd for local desktop export of the audited dataset to Parquet and Arrow. See docs/binary-dataset.md for compression profiles, five-decimal runtime coordinates, full-precision archives, validation and recorded loader proposals. No database or production changes.
+
+## Local file-loader comparison
+
+A separate diagnostic page compares actual Parquet and Arrow decoding, progressive land display, four-worker filtering, analytics and fleet rates. Run npm run build and npm run preview -- --host 127.0.0.1 --port 5186 --strictPort, then open http://127.0.0.1:5186/accidents/benchmark.html. See docs/file-benchmark.md for setup, measured results and limits. Generated data stays local; production remains unchanged.
