@@ -4,7 +4,7 @@ dist/
 dist-ssr/
 logs/
 *.log
-# Credentials and exported/imported data
+# Credentials and exported/imported data (UAD_data is kept outside this repository)
 /data/
 .env
 .env.*

@@ -85,3 +85,5 @@ Parquet имеет row groups 16 384 строки и статистику кол
 | Arrow stream Brotli | 1 404 135 |
 
 Размеры относятся к одному контрольному экспорту; метаданные генерации могут немного менять сжатые размеры повторного запуска. Это не измерение скорости браузерной карты. Полный экспорт 96 земель/лет и запуск создания окружения/установки на целевом десктопе пока не выполнялись; их выполняет запускной файл. Сеть/HTTP Range, настройки хостинга и первые кадры в браузере остаются следующим этапом.
+
+Path update (step 01, 2026-10-11): local datasets were moved from UAD/data to the adjacent UAD_data folder. The local file server discovers UAD_data automatically; UAD_DATA_DIR or UAD_BINARY_DATA can override it. Generated datasets and step ZIP archives remain outside Git. Historical measurements above retain their original dataset names.

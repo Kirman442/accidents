@@ -9,8 +9,9 @@ export function binaryAssetsPlugin(root) {
     if(!pathname.startsWith(prefix))return next();
     try {
       if(!source) {
-        const folder=process.env.UAD_BINARY_DATA || readdirSync(join(root,'data')).filter(n=>n.startsWith('binary-2020-2025-')).sort().at(-1);
-        const path=process.env.UAD_BINARY_DATA?resolve(folder):join(root,'data',folder || 'missing');
+        const dataRoot=process.env.UAD_DATA_DIR || (existsSync(resolve(root,'../UAD_data'))?resolve(root,'../UAD_data'):join(root,'data'));
+        const folder=process.env.UAD_BINARY_DATA || readdirSync(dataRoot).filter(n=>n.startsWith('binary-2020-2025-')).sort().at(-1);
+        const path=process.env.UAD_BINARY_DATA?resolve(folder):join(dataRoot,folder || 'missing');
         const manifest=JSON.parse(readFileSync(join(path,'manifest.json'),'utf8'));
         if(manifest.status!=='complete' || manifest.shards.length!==96)throw new Error('Требуется завершённый экспорт всех лет/земель');
         source={path,allowed:new Set(['manifest.json',...manifest.files.map(e=>e.path)])};

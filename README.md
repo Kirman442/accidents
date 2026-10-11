@@ -38,3 +38,9 @@ Run RUN_PREPARE_BINARY.cmd for local desktop export of the audited dataset to Pa
 ## Local file-loader comparison
 
 A separate diagnostic page compares actual Parquet and Arrow decoding, progressive land display, four-worker filtering, analytics and fleet rates. Run npm run build and npm run preview -- --host 127.0.0.1 --port 5186 --strictPort, then open http://127.0.0.1:5186/accidents/benchmark.html. See docs/file-benchmark.md for setup, measured results and limits. Generated data stays local; production remains unchanged.
+
+## Step 01 — Loader and cache (2026-10-11)
+
+The current file-loader entry point is /accidents/files.html: selected-year Arrow+Brotli or Parquet, four persistent workers, progressive land display and an LRU data-buffer budget of 100/32 MiB. Source data now lives outside Git in the adjacent UAD_data folder. Run the preview on port 5187. No Supabase environment is needed for this page.
+
+See README_01_step_Loader_and_cache.md for the step report and archive workflow, and docs/progress.md for the overall journal. Archives stay local in UAD_data/NN_step_Name.zip; data, credentials, dependencies and build output are excluded. The existing Supabase map and benchmark remain separate entry points.

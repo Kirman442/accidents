@@ -320,8 +320,8 @@ def prepare(args):
 def main():
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--input', type=Path, default=root / 'data/prepared-2020-2025')
-    parser.add_argument('--output', type=Path, default=root / 'data/binary-2020-2025-v1')
+    parser.add_argument('--input', type=Path, default=root.parent / 'UAD_data/prepared-2020-2025')
+    parser.add_argument('--output', type=Path, default=root.parent / 'UAD_data/binary-2020-2025-v1')
     parser.add_argument('--years', type=int, nargs='+')
     parser.add_argument('--lands', type=int, nargs='+', default=list(range(1, 17)))
     parser.add_argument('--coordinate-decimals', type=int, choices=(5, 6), default=5)

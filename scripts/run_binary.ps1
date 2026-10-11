@@ -1,14 +1,15 @@
-param([string]$Python = '', [string]$Output = '', [switch]$SkipInstall)
+param([string]$Python = '', [string]$Output = '', [string]$DataRoot = '', [switch]$SkipInstall)
 $ErrorActionPreference = 'Stop'
 $taskRoot = Split-Path $PSScriptRoot -Parent
-$taskInput = Join-Path $taskRoot 'data/prepared-2020-2025'
+if (-not $DataRoot) { $DataRoot = if ($env:UAD_DATA_DIR) { $env:UAD_DATA_DIR } else { Join-Path (Split-Path $taskRoot -Parent) 'UAD_data' } }
+$taskInput = Join-Path $DataRoot 'prepared-2020-2025'
 if (-not (Test-Path -LiteralPath (Join-Path $taskInput 'manifest.json'))) {
-    throw 'Missing prepared dataset: data/prepared-2020-2025/manifest.json'
+    throw 'Missing prepared dataset: specify -DataRoot or UAD_DATA_DIR'
 }
 if (-not $Output) {
-    $Output = Join-Path $taskRoot ('data/binary-2020-2025-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
+    $Output = Join-Path $DataRoot ('binary-2020-2025-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
 }
-$taskEnvironment = Join-Path $taskRoot 'data/.venv-binary'
+$taskEnvironment = Join-Path $DataRoot '.venv-binary'
 $taskExecutable = Join-Path $taskEnvironment 'Scripts/python.exe'
 if (-not (Test-Path -LiteralPath $taskExecutable)) {
     if ($Python) { & $Python -m venv $taskEnvironment }
@@ -23,7 +24,7 @@ if (-not $SkipInstall) {
     & $taskExecutable -m pip install -r (Join-Path $PSScriptRoot 'requirements-binary.txt')
     if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed' }
 }
-$taskLog = Join-Path $taskRoot ('data/binary-prepare-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '.log')
+$taskLog = Join-Path $DataRoot ('binary-prepare-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '.log')
 Start-Transcript -LiteralPath $taskLog
 try {
     & $taskExecutable -B -X utf8 (Join-Path $taskRoot 'tests/binary_preparation_test.py')

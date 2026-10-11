@@ -11,7 +11,7 @@ export default defineConfig({
   plugins: [react(),binaryAssetsPlugin(root)],
   build: {
     rollupOptions: {
-      input: {main:resolve(root,'index.html'),benchmark:resolve(root,'benchmark.html')},
+      input: {main:resolve(root,'index.html'),benchmark:resolve(root,'benchmark.html'),files:resolve(root,'files.html')},
       output: {
         manualChunks(id) {
           if (id.includes('/src/components/')) {
