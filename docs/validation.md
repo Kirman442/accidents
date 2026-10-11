@@ -5,8 +5,12 @@
 - Each source export matched its exact per-land count.
 - Actual production request code loaded coordinates and attributes directly through the new public REST API. Every loaded coordinate and each attribute used by the map matched the source export. Total 269048; sequential verification 20197 ms. This interval is not map readiness or a benchmark.
 - API probe requesting 20000 rows from land 05 returned 20000, HTTP 200.
-- 12 regression tests passed: server truncation, pagination termination, duplicates/order, table validation, error propagation, cancellation, unsafe IDs, invalid coordinates, land-aware merge, concurrency, combined/null/zero filters.
+- 14 regression tests passed (including progressive land completion and cancellation of late callbacks): server truncation, pagination termination, duplicates/order, table validation, error propagation, cancellation, unsafe IDs, invalid coordinates, land-aware merge, concurrency, combined/null/zero filters.
 - Vite production build passed. ESLint src passed with four pre-existing Fast Refresh warnings in legendSelectOptions.prod.jsx.
 - Browser: loaded 269048 points, bicycle Without returned 181868 (shown as 181.9K); combining land 05 returned 40047 (40.0K); reset restored 269048. Error UI was also observed before the new tables existed.
 
 These checks confirm this experimental version loads complete data and filters correctly in the observed runs. They do not establish why the original parent-table API intermittently timed out, or guarantee long-term absence of timeouts.
+
+## Progressive loading follow-up
+
+Four concurrent land tasks are retained. In the browser, 6/16 completed lands were already visible with approximately 79000 points; the final dataset reached 269048 points and the Hexagon view. Filters stayed disabled until attributes completed. Coordinate-phase errors keep partial data as points and display an error instead of aggregating incomplete data. Build and tests passed.

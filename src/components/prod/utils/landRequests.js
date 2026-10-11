@@ -58,7 +58,7 @@ export function mergeAttributes(features, attributes) {
   if (map.size) throw new Error('Attributes without coordinates');
   return merged;
 }
-export async function loadPhase(tables, task, signal, concurrency=4) {
+export async function loadPhase(tables, task, signal, concurrency=4, onComplete) {
   const results = new Array(tables.length);
   let cursor=0;
   await Promise.all(Array.from({length:Math.min(concurrency,tables.length)},async()=>{
@@ -66,6 +66,8 @@ export async function loadPhase(tables, task, signal, concurrency=4) {
       abort(signal);
       const index=cursor++;
       results[index]=await task(tables[index]);
+      abort(signal);
+      onComplete?.(results[index], tables[index]);
     }
   }));
   return results.flat();

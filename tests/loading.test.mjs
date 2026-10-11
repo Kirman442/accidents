@@ -69,3 +69,26 @@ test('zero means Without, null means All; combined filters and reset',()=>{
  assert.equal(matchesFilters({uland:5,ist_rad:0,ist_pkw:0},{uland:5,ist_rad:0,ist_pkw:1}),false);
  assert.equal(filterCoordinates([{properties:{uland:5},latitude:50,longitude:10}],{}).length,1);
 });
+
+test('progressive completion publishes each ready land before the full phase finishes', async () => {
+ const ready = [], gates = new Map();
+ const phase = loadPhase([1,2,3,4,5], land => new Promise(resolve => gates.set(land, resolve)), undefined, 4, (rows, land) => ready.push({rows,land}));
+ assert.equal(gates.size,4);
+ gates.get(2)([20]);
+ await new Promise(resolve => setImmediate(resolve));
+ assert.deepEqual(ready,[{rows:[20],land:2}]);
+ assert.equal(gates.size,5);
+ for (const land of [1,3,4,5]) gates.get(land)([land*10]);
+ assert.deepEqual(await phase,[10,20,30,40,50]);
+ assert.deepEqual(ready.map(item=>item.land),[2,1,3,4,5]);
+});
+test('aborted phase never publishes a late land or starts queued work',async()=>{
+ const controller=new AbortController(), ready=[], gates=new Map();
+ const phase=loadPhase([1,2,3,4,5],land=>new Promise(resolve=>gates.set(land,resolve)),controller.signal,4,rows=>ready.push(rows));
+ const rejected=assert.rejects(phase,{name:'AbortError'});
+ controller.abort();
+ for(const land of [1,2,3,4])gates.get(land)([land]);
+ await rejected;
+ assert.deepEqual(ready,[]);
+ assert.equal(gates.has(5),false);
+});

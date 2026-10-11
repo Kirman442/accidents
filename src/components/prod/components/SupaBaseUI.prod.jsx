@@ -40,15 +40,29 @@ const SupaBaseUI = () => {
         };
 
         loadData();
-        const timer = setTimeout(() => setElevation(50), 2500);
-        return () => { clearTimeout(timer); cancelLoading(); };
+        return cancelLoading;
     }, [loadPartitions, cancelLoading]);
+
+    useEffect(() => {
+        setElevation(0);
+        if (!state.geoComplete) return;
+        const timer = setTimeout(() => setElevation(50), 100);
+        return () => clearTimeout(timer);
+    }, [state.geoComplete]);
 
     const dataToRender = state.attributesComplete ? fullFeatures : initialFeatures;
     const filteredData = useMemo(() => filterCoordinates(dataToRender, filters), [dataToRender, filters]);
 
     const layers = useMemo(() => {
-        if (!state.geoComplete) return [new ScatterplotLayer({id:"loading-points",data:[],getPosition:d=>[d.longitude,d.latitude]})];
+        if (!state.geoComplete) return [new ScatterplotLayer({
+            id: 'loading-points',
+            data: filteredData,
+            getPosition: d => [d.longitude, d.latitude],
+            radiusUnits: 'pixels',
+            getRadius: 1,
+            getFillColor: [43, 140, 190],
+            pickable: false
+        })];
         const commonProps = {
             data: filteredData,
             getPosition: d => [d.longitude, d.latitude],
@@ -147,7 +161,7 @@ const SupaBaseUI = () => {
                         borderRadius: '5px',
                         zIndex: 100
                     }}>
-                        Data loading...
+                        Daten werden geladen… {state.geoLoadedLands}/16 Länder
                     </div>
                 )}
 
