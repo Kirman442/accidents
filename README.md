@@ -56,3 +56,7 @@ Regenerate the small tracked public bundle with `node scripts/prepare-overview.m
 Standalone review screens are saved in `prototypes/overview-mockup.html` and `prototypes/time-mockup.html`. The second screen uses verified joint time aggregates, calendar-adjusted weekday/weekend profiles and participant/period selection. These are design prototypes; the application loader and map remain at step 02.
 
 The proposed generic filter implementation was deferred pending analytics decisions. See `docs/analytics-candidates.md` for the appendable candidate register and `README_03_step_Analytics_mockups.md` for scope, data checks and local archive `03_step_Analytics_mockups.zip`.
+
+## Step 04 — Severity and conditions (2026-10-11)
+
+The third standalone prototype is `prototypes/severity-mockup.html`: outcome categories, annual shares, lighting/road comparisons and joint cells with actual counts. All three prototypes now retain the header controls while scrolling. Candidate C17 records weekday/hour maxima and minima for later discussion. See README_04_step_Severity_and_conditions.md and docs/analytics-candidates.md. Local archive: `04_step_Severity_and_conditions.zip`.
