@@ -1,136 +1,35 @@
-import { useState, useCallback, useRef } from 'react';
-import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// Функция загрузки координат чанками
-async function fetchGeoData(partitionName, batchSize = 20000) {
-    let offset = 0;
-    const featuresWithCoords = [];
-    while (true) {
-        const { data, error } = await supabase
-            .from(partitionName)
-            .select('oid, xgcswgs84, ygcswgs84')
-            .range(offset, offset + batchSize - 1);
-
-        if (error) throw error;
-        if (!data.length) break;
-
-        const parsedFeatures = data.map(item => ({
-            type: 'Feature',
-            properties: { oid: item.oid },
-            geometry: { coordinates: [item.xgcswgs84, item.ygcswgs84], type: 'Point' },
-            latitude: parseFloat(item.ygcswgs84),
-            longitude: parseFloat(item.xgcswgs84),
-        }));
-        featuresWithCoords.push(...parsedFeatures);
-        offset += batchSize;
-    }
-    return featuresWithCoords;
-}
-
-// Функция загрузки атрибутов чанками (аналогично fetchGeoData)
-async function fetchAttributesByRange(partitionName, batchSize = 20000) {
-    let offset = 0;
-    const allAttributes = [];
-    while (true) {
-        const { data, error } = await supabase
-            .from(partitionName)
-            .select('oid, uland, uwochentag, ukategorie, ist_rad, ist_pkw, ist_fuss')
-            .range(offset, offset + batchSize - 1);
-
-        if (error) {
-            console.error('Ошибка при загрузке атрибутов (по диапазону):', error);
-            throw error;
-        }
-        if (!data.length) break;
-
-        allAttributes.push(...data);
-        offset += batchSize;
-    }
-    // console.log(`WorkspaceAttributesByRange for ${partitionName}:`, allAttributes.length);
-    return allAttributes; // Массив объектов { oid, uwochentag, ukategorie... }
-}
-
+import {useState,useCallback,useRef,useEffect} from 'react';
+import {createClient} from '@supabase/supabase-js';
+import {fetchLand,toFeatures,mergeAttributes,loadPhase} from './landRequests.js';
+const url=import.meta.env.VITE_SUPABASE_URL, key=import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabase=url && key ? createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}) : null;
+const empty=()=>({loading:false,loadingAttributes:false,errors:{},initialFeatures:[],fullFeatures:[],initialLoadTime:null,fullLoadTime:null,geoComplete:false,attributesComplete:false});
 export function usePartitionLoader() {
-    const [state, setState] = useState({
-        loading: false,
-        loadingAttributes: false,
-        errors: {},
-        initialFeatures: [], // Фичи только с координатами
-        fullFeatures: [],     // Фичи с полными данными (координаты + атрибуты)
-        initialLoadTime: null, // Время загрузки координат
-        fullLoadTime: null,    // Время загрузки всех данных
-    });
-
-    const startTimeRef = useRef(null);
-    const initialLoadEndTimeRef = useRef(null);
-    const fullLoadStartTimeRef = useRef(null);
-
-    const loadPartitions = useCallback(async (partitions) => {
-        setState(prev => ({ ...prev, loading: true, loadingAttributes: false, errors: {} }));
-        startTimeRef.current = performance.now();
-        let allInitialFeatures = [];
-        let allFullFeatures = [];
-
-        try {
-            const initialFeaturesPromises = partitions.map(async (partition) => {
-                return await fetchGeoData(partition);
-            });
-
-            const resultsInitialFeatures = await Promise.all(initialFeaturesPromises);
-            allInitialFeatures = resultsInitialFeatures.flat();
-            initialLoadEndTimeRef.current = performance.now();
-            setState(prev => ({
-                ...prev,
-                loading: false,
-                initialFeatures: allInitialFeatures,
-                initialLoadTime: (initialLoadEndTimeRef.current - startTimeRef.current) / 1000,
-            }));
-
-            setState(prev => ({ ...prev, loadingAttributes: true }));
-            fullLoadStartTimeRef.current = performance.now();
-
-            const attributesPromises = partitions.map(async (partition) => {
-                return await fetchAttributesByRange(partition);
-            });
-
-            const resultsAttributes = await Promise.all(attributesPromises);
-            const allAttributes = resultsAttributes.flat();
-
-            // карта поиска для атрибутов на основе oid
-            const attributesMap = new Map(allAttributes.map(attr => [attr.oid, attr]));
-
-            allFullFeatures = allInitialFeatures.map(feature => {
-                const attribute = attributesMap.get(feature.properties.oid);
-                return {
-                    ...feature,
-                    properties: {
-                        ...feature.properties,
-                        ...(attribute || {}),
-                    },
-                };
-            });
-
-            const fullLoadEndTime = performance.now();
-            setState(prev => ({
-                ...prev,
-                loadingAttributes: false,
-                fullFeatures: allFullFeatures,
-                fullLoadTime: (fullLoadEndTime - fullLoadStartTimeRef.current) / 1000,
-            }));
-
-        } catch (error) {
-            setState(prev => ({
-                ...prev,
-                loading: false,
-                loadingAttributes: false,
-                errors: { global: error }
-            }));
-        }
-    }, []);
-
-    return { state, loadPartitions };
+  const [state,setState]=useState(empty);
+  const active=useRef(null);
+  const cancelLoading=useCallback(()=>{active.current?.abort();active.current=null;},[]);
+  useEffect(()=>cancelLoading,[cancelLoading]);
+  const loadPartitions=useCallback(async tables=>{
+    active.current?.abort();
+    const controller=new AbortController(); active.current=controller;
+    const signal=controller.signal, start=performance.now();
+    setState({...empty(),loading:true});
+    try {
+      if (!supabase) throw new Error('Supabase connection is not configured');
+      const initialFeatures=await loadPhase(tables,async table=>toFeatures(await fetchLand(supabase,table,'oid,xgcswgs84,ygcswgs84',{signal})),signal);
+      if (active.current!==controller || signal.aborted) return;
+      setState(prev=>({...prev,initialFeatures,loading:false,loadingAttributes:true,geoComplete:true,initialLoadTime:(performance.now()-start)/1000}));
+      const attrStart=performance.now();
+      const attributes=await loadPhase(tables,table=>fetchLand(supabase,table,'oid,uland,uwochentag,ukategorie,ist_rad,ist_pkw,ist_fuss',{signal}),signal);
+      const fullFeatures=mergeAttributes(initialFeatures,attributes);
+      if (active.current!==controller || signal.aborted) return;
+      setState(prev=>({...prev,fullFeatures,loadingAttributes:false,attributesComplete:true,fullLoadTime:(performance.now()-attrStart)/1000}));
+    } catch(error) {
+      if (active.current!==controller || signal.aborted) return;
+      controller.abort();
+      setState(prev=>({...prev,loading:false,loadingAttributes:false,errors:{global:error}}));
+    }
+  },[]);
+  return {state,loadPartitions,cancelLoading};
 }

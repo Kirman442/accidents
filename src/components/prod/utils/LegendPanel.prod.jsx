@@ -3,7 +3,7 @@ import '../../../css/LegendPanel.css';
 import DarkSelect from './darkSelect.prod';
 import { selectLandOptions, selectDayOptions, selectCategoryOptions, Legend, LAYER_DESCRIPTIONS } from './legendSelectOptions.prod.jsx';
 
-const LegendPanel = ({ showHex, setShowHex, filters, setFilters, dataStats }) => {
+const LegendPanel = ({ showHex, setShowHex, filters, setFilters, dataStats, disabled = false }) => {
     const [isInfoExpanded, setIsInfoExpanded] = useState(true);
     const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
     const [isDatasetExpanded, setIsDatasetExpanded] = useState(false);
@@ -131,22 +131,20 @@ const LegendPanel = ({ showHex, setShowHex, filters, setFilters, dataStats }) =>
                                 <div className="stat-label">Gefiltert</div>
                                 <div className="stat-value">{formatNumber(dataStats.filtered)}</div>
                             </div>
-                            {/* <div className="stat-item">
-                                <div className="stat-label">Filtered of total shown</div>
-                                <div className="stat-value">{Math.round((dataStats.filtered / dataStats.total) * 100)}%</div>
-                            </div> */}
                         </div>
                         <div className="description-block">
 
+                            <fieldset disabled={disabled} style={{border:0,padding:0,margin:0}}>
                             <div className="filter-group">
                                 <label>Land:</label>
                                 <DarkSelect
+                                    disabled={disabled}
                                     options={selectLandOptions}
                                     value={filters.uland ? selectLandOptions.find(opt => opt.value === filters.uland) : null}
                                     onChange={(selected) =>
                                         setFilters(prev => ({
                                             ...prev,
-                                            uland: selected ? selected.value : null
+                                            uland: selected && selected.value !== 0 ? selected.value : null
                                         }))
                                     }
                                     placeholder="Alle Länder"
@@ -157,12 +155,13 @@ const LegendPanel = ({ showHex, setShowHex, filters, setFilters, dataStats }) =>
                             <div className="filter-group">
                                 <label>Wochentag:</label>
                                 <DarkSelect
+                                    disabled={disabled}
                                     options={selectDayOptions}
                                     value={filters.uwochentag ? selectDayOptions.find(opt => opt.value === filters.uwochentag) : null}
                                     onChange={(selected) =>
                                         setFilters(prev => ({
                                             ...prev,
-                                            uwochentag: selected ? selected.value : null
+                                            uwochentag: selected && selected.value !== 0 ? selected.value : null
                                         }))
                                     }
                                     placeholder="Alle Wochentagen"
@@ -172,12 +171,13 @@ const LegendPanel = ({ showHex, setShowHex, filters, setFilters, dataStats }) =>
                             <div className="filter-group">
                                 <label>Unfallkategorien:</label>
                                 <DarkSelect
+                                    disabled={disabled}
                                     options={selectCategoryOptions}
                                     value={filters.ukategorie ? selectCategoryOptions.find(opt => opt.value === filters.ukategorie) : null}
                                     onChange={(selected) =>
                                         setFilters(prev => ({
                                             ...prev,
-                                            ukategorie: selected ? selected.value : null
+                                            ukategorie: selected && selected.value !== 0 ? selected.value : null
                                         }))
                                     }
                                     placeholder="Alle Unfallkategorien"
@@ -185,48 +185,139 @@ const LegendPanel = ({ showHex, setShowHex, filters, setFilters, dataStats }) =>
                             </div>
 
                             <div className="filter-group">
-                                <label>Unfall mit Rad:</label>
-                                <div
-                                    className={`toggle-switch ${filters.ist_rad === 1 ? 'active' : ''}`}
-                                    onClick={() => setFilters({
-                                        ...filters,
-                                        ist_rad: filters.ist_rad === 1 ? 0 : 1
-                                    })}
-                                >
-                                    <div className="toggle-knob" />
-                                    <span className="toggle-label">
-                                        {filters.ist_rad === 1 ? 'mit Fahrradbeteiligung' : 'ohne Fahrradbeteiligung'}
-                                    </span>
+                                <label>Fahrradbeteiligung:</label>
+
+                                <div className="participation-filter">
+                                    <button
+                                        type="button"
+                                        className={filters.ist_rad == null ? 'selected' : ''}
+                                        onClick={() =>
+                                            setFilters(prev => ({
+                                                ...prev,
+                                                ist_rad: null
+                                            }))
+                                        }
+                                    >
+                                        Alle
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className={filters.ist_rad === 1 ? 'selected' : ''}
+                                        onClick={() =>
+                                            setFilters(prev => ({
+                                                ...prev,
+                                                ist_rad: 1
+                                            }))
+                                        }
+                                    >
+                                        Mit
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className={filters.ist_rad === 0 ? 'selected' : ''}
+                                        onClick={() =>
+                                            setFilters(prev => ({
+                                                ...prev,
+                                                ist_rad: 0
+                                            }))
+                                        }
+                                    >
+                                        Ohne
+                                    </button>
                                 </div>
                             </div>
+
+
                             <div className="filter-group">
-                                <label>Unfall mit Pkw:</label>
-                                <div
-                                    className={`toggle-switch ${filters.ist_pkw === 1 ? 'active' : ''}`}
-                                    onClick={() => setFilters({
-                                        ...filters,
-                                        ist_pkw: filters.ist_pkw === 1 ? 0 : 1
-                                    })}
-                                >
-                                    <div className="toggle-knob" />
-                                    <span className="toggle-label">
-                                        {filters.ist_pkw === 1 ? 'mit PKW-Beteiligung' : 'ohne PKW-Beteiligung'}
-                                    </span>
+                                <label>PKW-Beteiligung:</label>
+
+                                <div className="participation-filter">
+                                    <button
+                                        type="button"
+                                        className={filters.ist_pkw == null ? 'selected' : ''}
+                                        onClick={() =>
+                                            setFilters(prev => ({
+                                                ...prev,
+                                                ist_pkw: null
+                                            }))
+                                        }
+                                    >
+                                        Alle
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className={filters.ist_pkw === 1 ? 'selected' : ''}
+                                        onClick={() =>
+                                            setFilters(prev => ({
+                                                ...prev,
+                                                ist_pkw: 1
+                                            }))
+                                        }
+                                    >
+                                        Mit
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className={filters.ist_pkw === 0 ? 'selected' : ''}
+                                        onClick={() =>
+                                            setFilters(prev => ({
+                                                ...prev,
+                                                ist_pkw: 0
+                                            }))
+                                        }
+                                    >
+                                        Ohne
+                                    </button>
                                 </div>
                             </div>
+
+
                             <div className="filter-group">
-                                <label>Unfall mit Fußgänger:</label>
-                                <div
-                                    className={`toggle-switch ${filters.ist_fuss === 1 ? 'active' : ''}`}
-                                    onClick={() => setFilters({
-                                        ...filters,
-                                        ist_fuss: filters.ist_fuss === 1 ? 0 : 1
-                                    })}
-                                >
-                                    <div className="toggle-knob" />
-                                    <span className="toggle-label">
-                                        {filters.ist_fuss === 1 ? 'mit Fußgängerbeteiligung' : 'ohne Fußgängerbeteiligung'}
-                                    </span>
+                                <label>Fußgängerbeteiligung:</label>
+
+                                <div className="participation-filter">
+                                    <button
+                                        type="button"
+                                        className={filters.ist_fuss == null ? 'selected' : ''}
+                                        onClick={() =>
+                                            setFilters(prev => ({
+                                                ...prev,
+                                                ist_fuss: null
+                                            }))
+                                        }
+                                    >
+                                        Alle
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className={filters.ist_fuss === 1 ? 'selected' : ''}
+                                        onClick={() =>
+                                            setFilters(prev => ({
+                                                ...prev,
+                                                ist_fuss: 1
+                                            }))
+                                        }
+                                    >
+                                        Mit
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className={filters.ist_fuss === 0 ? 'selected' : ''}
+                                        onClick={() =>
+                                            setFilters(prev => ({
+                                                ...prev,
+                                                ist_fuss: 0
+                                            }))
+                                        }
+                                    >
+                                        Ohne
+                                    </button>
                                 </div>
                             </div>
                             <div
@@ -244,6 +335,7 @@ const LegendPanel = ({ showHex, setShowHex, filters, setFilters, dataStats }) =>
                                     </div>
                                 </div>
                             </div>
+                        </fieldset>
                         </div>
 
                         {/* <div className="data-stats">

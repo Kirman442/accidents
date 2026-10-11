@@ -1,7 +1,7 @@
 import React from 'react';
 import Select from 'react-select';
 
-const CustomSelect = ({ options, value, onChange, placeholder }) => {
+const CustomSelect = ({ options, value, onChange, placeholder, disabled = false }) => {
     const customStyles = {
         control: (base) => ({
             ...base,
@@ -83,6 +83,7 @@ const CustomSelect = ({ options, value, onChange, placeholder }) => {
 
     return (
         <Select
+            isDisabled={disabled}
             styles={customStyles}
             options={options}
             value={value}
