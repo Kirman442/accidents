@@ -44,3 +44,9 @@ A separate diagnostic page compares actual Parquet and Arrow decoding, progressi
 The current file-loader entry point is /accidents/files.html: selected-year Arrow+Brotli or Parquet, four persistent workers, progressive land display and an LRU data-buffer budget of 100/32 MiB. Source data now lives outside Git in the adjacent UAD_data folder. Run the preview on port 5187. No Supabase environment is needed for this page.
 
 See README_01_step_Loader_and_cache.md for the step report and archive workflow, and docs/progress.md for the overall journal. Archives stay local in UAD_data/NN_step_Name.zip; data, credentials, dependencies and build output are excluded. The existing Supabase map and benchmark remain separate entry points.
+
+## Step 02 — Overview and fleet (2026-10-11)
+
+The file page now starts with a 26 KB public summary bundle: annual Unfallatlas totals for 2020–2025, severity, overlapping participant groups, land comparisons and crashes involving Pkw per 10,000 registered Pkw. All 119 national/land fleet snapshots from 2020–2026 are included. The overview remains available independently of map loading and LRU clearing. Selected land persists when switching year/source/budget.
+
+Regenerate the small tracked public bundle with `node scripts/prepare-overview.mjs <complete binary export folder>`, then test and build. Full source datasets stay outside Git in UAD_data. See README_02_step_Overview_and_fleet.md for inputs, checksum validation, formulas, browser checks and the local archive `02_step_Overview_and_fleet.zip`. Arbitrary combined filters remain step 03; publication requires separate approval.
