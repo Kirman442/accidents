@@ -60,3 +60,8 @@ The proposed generic filter implementation was deferred pending analytics decisi
 ## Step 04 — Severity and conditions (2026-10-11)
 
 The third standalone prototype is `prototypes/severity-mockup.html`: outcome categories, annual shares, lighting/road comparisons and joint cells with actual counts. All three prototypes now retain the header controls while scrolling. Candidate C17 records weekday/hour maxima and minima for later discussion. See README_04_step_Severity_and_conditions.md and docs/analytics-candidates.md. Local archive: `04_step_Severity_and_conditions.zip`.
+
+
+## Шаг 05 — Map mockup · 2026-10-11
+
+База `efebdda`. Четвёртый макет с настоящими точками, рабочими годом и землёй; переходы сохраняют контекст исследования. Header закреплён, дополнительные фильтры и карточка пока для обсуждения. C18 «Сравнения и рейтинги» отложен. Проверены сборка, ESLint, 30 тестов, числа карты, переходы и узкий экран. Ограничения iframe/кеша и локального запуска: `README_05_step_Map_mockup.md`. Полный локальный снимок: `UAD_data/05_step_Map_mockup.zip`.

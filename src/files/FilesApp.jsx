@@ -13,9 +13,13 @@ import './files.css';
 const names=['Все земли','Schleswig-Holstein','Hamburg','Niedersachsen','Bremen','Nordrhein-Westfalen','Hessen','Rheinland-Pfalz','Baden-Württemberg','Bayern','Saarland','Berlin','Brandenburg','Mecklenburg-Vorpommern','Sachsen','Sachsen-Anhalt','Thüringen'];
 const base=(import.meta.env.VITE_FILE_DATA_BASE_URL || import.meta.env.BASE_URL+'__binary/').replace(/\/?$/,'/');
 const nf=new Intl.NumberFormat('ru-RU'),mib=n=>(n/1048576).toFixed(2);
+const query=new URLSearchParams(window.location.search);
+const mapOnly=query.get('mapOnly')==='1';
+const initialYear=mapOnly&&[2020,2021,2022,2023,2024,2025].includes(Number(query.get('year')))?Number(query.get('year')):2025;
+const initialLand=mapOnly&&/^([0-9]|1[0-6])$/.test(query.get('land')||'')?Number(query.get('land')):0;
 export default function FilesApp(){
-  const loader=useRef(null),selection=useRef({year:2025,format:'arrow',budget:window.matchMedia('(max-width:700px)').matches?32:100});
-  const [options,setOptions]=useState(selection.current),[land,setLand]=useState(0),[error,setError]=useState('');
+  const loader=useRef(null),selection=useRef({year:initialYear,format:'arrow',budget:window.matchMedia('(max-width:700px)').matches?32:100});
+  const [options,setOptions]=useState(selection.current),[land,setLand]=useState(initialLand),[error,setError]=useState('');
   const [generation,setGeneration]=useState(null);
   const [view,setView]=useState({state:'catalog',parts:[],loaded:0,cache:{entries:[],bytes:0,limitBytes:options.budget*1048576}});
   useEffect(()=>{
@@ -49,6 +53,15 @@ export default function FilesApp(){
   const status=view.state==='ready'?(view.fromCache?'Год восстановлен из памяти, без скачивания':'Год загружен и проверен'):
     view.state==='loading'?`Загружаем ${view.year}: ${view.loaded}/16 земель`:
       view.state==='catalog'?'Читаем каталог данных…':view.state==='switching'?'Переключаем год…':view.state==='error'?'Ошибка загрузки':'Загрузка остановлена или кеш очищен';
+  if(mapOnly)return <main className="map-only" aria-label="Карта ДТП">
+    <div className="map-only-canvas"><DeckGL initialViewState={{longitude:10.4,latitude:51.1,zoom:5}} controller layers={layers}>
+      <MapView mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json" attributionControl /></DeckGL></div>
+    <section className="map-only-status"><strong>{nf.format(stats.count)} ДТП · {options.year}</strong>
+      <p>{names[land]}</p><p role="status">{status}</p>
+      {(error||view.error)&&<><p role="alert">{error||view.error}</p><button onClick={()=>loader.current?request({...options}):window.location.reload()}>Повторить загрузку</button></>}
+      <small>Земли появляются по мере загрузки. Масштаб: колесо / щипок; перемещение: перетаскивание.</small>
+    </section>
+  </main>;
   return <main className="files-app">
     <header><h1>Unfallatlas · файловая версия</h1><p>ДТП, динамика по годам и автопарк Германии. Земли на карте появляются по мере готовности.</p></header>
     <section className="file-controls">
