@@ -26,3 +26,7 @@ The scripts are guarded to the original and new project references for this expe
 Use node --use-system-ca when required by the Windows certificate configuration. Import requires psql; UAD_PSQL can override the default local executable. Geometry is transferred through GeoJSON into PostGIS. Source count/export/verification files remain local and are not committed.
 
 See docs/loader-audit.md and docs/validation.md for findings and verified results.
+
+## Analytics preparation
+
+See docs/analytics-dataset.md for local preparation of Unfallatlas 2020-2025 and KBA FZ 1 snapshots 2020-2026. Generated datasets stay under ignored data/; preparation does not modify Supabase or the published map.
