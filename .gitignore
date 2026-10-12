@@ -22,3 +22,7 @@ logs/
 *.sln
 *.sw?
 *.dev.*
+
+# Generated analytic prototype adapters, rebuilt from tracked source
+/public/prototypes/
+/public/prototype-bridge.js

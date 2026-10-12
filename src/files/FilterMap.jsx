@@ -5,10 +5,10 @@ import {DataFilterExtension} from '@deck.gl/extensions';
 import {Map as MapView} from '@vis.gl/react-maplibre';
 import RecordCard from './RecordCard.jsx';
 import {PICK_LIMIT} from './record-details.js';
-import {emptyFilters,fields,participantNames,periods,seasons,mergeQueryParts,validateMapFilters} from './map-query.js';
+import {emptyFilters,fields,participantNames,periods,seasons,mergeQueryParts,validateMapFilters,applyParticipantIntent} from './map-query.js';
 const nf=new Intl.NumberFormat('ru-RU'),extension=new DataFilterExtension({filterSize:1});
 const origin='http://127.0.0.1:5188';
-export default function FilterMap({loader,view,options,land,names,years,request,setLand}){
+export default function FilterMap({loader,view,options,land,names,years,request,setLand,active=true,selectionControls=true,filterIntent=null}){
   const [filters,setFilters]=useState(()=>{
     let f=emptyFilters();const group=new URLSearchParams(location.search).get('group');
     try{const saved=JSON.parse(sessionStorage.getItem('uad-map-filters')||'null');if(saved){validateMapFilters(saved);f={...f,...saved};}}catch{/* Ignore incompatible saved filters. */}
@@ -20,17 +20,18 @@ export default function FilterMap({loader,view,options,land,names,years,request,
   const [open,setOpen]=useState(null),menu=useRef(null),scheduler=useRef({version:0,running:false,latest:null,alive:true});
   useEffect(()=>{const s=scheduler.current;s.alive=true;return()=>{s.alive=false;s.version++;};},[]);
   useEffect(()=>{
+    if(!active)return;
     const close=e=>{if(e.type==='keydown'&&e.key==='Escape'){if(open)setOpen(null);else{setSelection(null);setSelectionNotice('');}}else if(e.type==='pointerdown'&&menu.current&&!menu.current.contains(e.target))setOpen(null);};
     document.addEventListener('pointerdown',close);document.addEventListener('keydown',close);
     return()=>{document.removeEventListener('pointerdown',close);document.removeEventListener('keydown',close);};
-  },[open]);
+  },[open,active]);
   useEffect(()=>{
     const receive=e=>{if(e.origin!==origin||e.source!==window.parent||e.data?.type!=='uad-selection')return;
       if(names[e.data.land])setLand(e.data.land);
       if(years.includes(e.data.year)&&e.data.year!==options.year)request({...options,year:e.data.year});};
     window.addEventListener('message',receive);return()=>window.removeEventListener('message',receive);
   },[names,years,options,request,setLand]);
-  useEffect(()=>{window.parent.postMessage({type:'uad-map-state',year:options.year,land,years,filters,count:result.count},origin);
+  useEffect(()=>{if(window.parent!==window)window.parent.postMessage({type:'uad-map-state',year:options.year,land,years,filters,count:result.count},origin);
     try{sessionStorage.setItem('uad-map-selection',JSON.stringify({year:options.year,land}));sessionStorage.setItem('uad-map-filters',JSON.stringify(filters));}catch{/* Optional browser storage. */}
   },[options.year,land,years,filters,result.count]);
   useEffect(()=>{
@@ -52,6 +53,9 @@ export default function FilterMap({loader,view,options,land,names,years,request,
     }
     pump();
   },[view.parts,land,filters,options.year,options.format,loader]);
+  useEffect(()=>{
+    if(filterIntent&&(filterIntent.group==='all'||Object.hasOwn(participantNames,filterIntent.group))){setFilters(f=>applyParticipantIntent(f,filterIntent.group));setSelectionNotice('');}
+  },[filterIntent]);
   const masks=useMemo(()=>new Map(result.parts.map(p=>[p.land,p.mask])),[result.parts]);
   useEffect(()=>{
     if(!selection)return;const h=selection.handle;
@@ -67,7 +71,7 @@ export default function FilterMap({loader,view,options,land,names,years,request,
     setSelection({handle:{...handle,year:options.year},choices,truncated});setSelectionNotice('');setOpen(null);
   }
   function pick(info,event){
-    if(result.updating||!result.source.length||!Number.isFinite(info.x)||!Number.isFinite(info.y))return;
+    if(!active||result.updating||!result.source.length||!Number.isFinite(info.x)||!Number.isFinite(info.y))return;
     const radius=event?.pointerType==='touch'||event?.srcEvent?.pointerType==='touch'||window.matchMedia('(pointer: coarse)').matches?10:6;
     const hits=deck.current.pickMultipleObjects({x:info.x,y:info.y,radius,depth:PICK_LIMIT+1});
     const handles=hits.map(hit=>{
@@ -81,11 +85,11 @@ export default function FilterMap({loader,view,options,land,names,years,request,
   const layers=useMemo(()=>{
     const points=result.source.map(p=>new ScatterplotLayer({id:'filtered-land-'+p.land,
     data:{length:p.ids.length,attributes:{getPosition:{value:p.positions,size:2},getFilterValue:{value:masks.get(p.land),size:1}}},
-    extensions:[extension],filterRange:[1,1],radiusUnits:'pixels',getRadius:1.2,getFillColor:[22,115,164,190],pickable:!result.updating}));
+    extensions:[extension],filterRange:[1,1],radiusUnits:'pixels',getRadius:1.2,getFillColor:[22,115,164,190],pickable:active&&!result.updating}));
     const h=selection?.handle,part=h&&result.source.find(p=>p.land===h.land);
     if(part&&h.year===options.year&&masks.get(h.land)?.[h.index])points.push(new ScatterplotLayer({id:'selected-ring',data:[{position:[part.positions[h.index*2],part.positions[h.index*2+1]]}],getPosition:d=>d.position,radiusUnits:'pixels',getRadius:8,filled:false,stroked:true,getLineColor:[214,94,40,255],getLineWidth:2,lineWidthUnits:'pixels',lineWidthMinPixels:2,pickable:false}));
     return points;
-  },[result.source,result.updating,masks,selection,options.year]);
+  },[result.source,result.updating,masks,selection,options.year,active]);
   const complete=view.state==='ready'&&!result.updating&&!result.error;
   const countOption=(key,option)=>option.hours?option.hours.reduce((n,h)=>n+(result.facets[key]?.[h]||0),0):result.facets[key]?.[option.value]||0;
   const selected=(key,o)=>o.hours?o.hours.every(h=>filters[key].includes(h)):filters[key].includes(o.value);
@@ -93,7 +97,7 @@ export default function FilterMap({loader,view,options,land,names,years,request,
   const summary=key=>key==='participants'?Object.entries(participantNames).filter(([k])=>filters[k]!=null).map(([k,n])=>(filters[k]===1?'С: ':'Без: ')+n).join('; ')||'Все':fields[key].options.filter(o=>selected(key,o)).map(o=>o.label).join(', ')||'Все';
   const loading=['catalog','switching','loading'].includes(view.state);
   return <main className="filtered-app">
-    {window.parent===window&&<section className="map-filterbar" aria-label="Выбор карты"><label>Год <select aria-label="Год карты" value={options.year} onChange={e=>request({...options,year:Number(e.target.value)})}>{years.map(y=><option key={y}>{y}</option>)}</select></label><label>Территория <select aria-label="Территория" value={land} onChange={e=>setLand(Number(e.target.value))}>{names.map((name,i)=><option value={i} key={name}>{name}</option>)}</select></label></section>}
+    {selectionControls&&window.parent===window&&<section className="map-filterbar" aria-label="Выбор карты"><label>Год <select aria-label="Год карты" value={options.year} onChange={e=>request({...options,year:Number(e.target.value)})}>{years.map(y=><option key={y}>{y}</option>)}</select></label><label>Территория <select aria-label="Территория" value={land} onChange={e=>setLand(Number(e.target.value))}>{names.map((name,i)=><option value={i} key={name}>{name}</option>)}</select></label></section>}
     <section className="map-filterbar" ref={menu} aria-label="Фильтры карты">
     {['participants',...Object.keys(fields)].map(key=><div className="filter-control" key={key}>
       <button className={open===key?'filter-toggle active':'filter-toggle'} aria-expanded={open===key} onClick={()=>setOpen(open===key?null:key)}>{key==='participants'?'Участники':fields[key].label}: {summary(key)}</button>

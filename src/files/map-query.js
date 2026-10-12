@@ -43,3 +43,9 @@ export function mergeQueryParts(parts){
   let count=0;for(const part of parts){count+=part.count;for(const k of Object.keys(facets))part.facets[k].forEach((n,i)=>facets[k][i]+=n);}
   return {parts,count,facets};
 }
+
+export function applyParticipantIntent(filters,group){
+  if(group!=='all'&&!Object.hasOwn(participantNames,group))throw new Error('Неизвестная группа участников');
+  const next={...filters,...Object.fromEntries(participants.map(k=>[k,null]))};
+  if(group!=='all')next[group]=1;return next;
+}

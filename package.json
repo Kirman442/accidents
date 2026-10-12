@@ -16,7 +16,9 @@
     "hardclean": "taskkill /f /im node.exe & rd /s /q \"node_modules\" \"dist\" 2>nul || echo.",
     "reinstall": "npm run clean && npm install",
     "fullreset": "npm run hardclean && npm install",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "prebuild": "node scripts/prepare-shell-prototypes.mjs",
+    "predev": "node scripts/prepare-shell-prototypes.mjs"
   },
   "dependencies": {
     "@loaders.gl/core": "^4.3.3",
