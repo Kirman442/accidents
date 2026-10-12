@@ -29,3 +29,6 @@
 
 
 Публикационное дополнение после08: пользователь разрешил новую ветку и отдельный Netlify-site; текущая release-ветка codex/uad-netlify-step08. Adapter и53tests/build прошли. Статус размещения и проверки — README_08_release_Netlify_preview.md. Предыдущий handoff описывает состояние до этой новой команды; его исторические refs/статус не переписываются.
+
+
+Netlify preview **опубликован**: https://kirman442-uad-step08.netlify.app/, code4a25c53, deploy6accf8a8a1755d1347ef51db. Gitbranch codex/uad-netlify-step08 запушена;195payload SHA/HTTP и реальное Arrow/Parquet browser чтение прошли. Подробности/ограничения — README_08_release_Netlify_preview.md. Автоматический Git-trigger не подключён.

@@ -90,3 +90,6 @@ The third standalone prototype is `prototypes/severity-mockup.html`: outcome cat
 ## Netlify preview после шага08 · 2026-10-12
 
 Отдельная release-ветка codex/uad-netlify-step08. Подготовлены publication adapter, выбранные Arrow/Parquet всех лет, generation URL, Edge encoding и reproducible data source. Подробности/актуальный статус: README_08_release_Netlify_preview.md. Прежний Supabase-сайт сохраняется; шаг09 native-analytics ещё не выполнялся.
+
+
+Публикация завершена: https://kirman442-uad-step08.netlify.app/. Ветка codex/uad-netlify-step08 наGitHub; новый live-check отчёт вREADME_08_release_Netlify_preview.md. Это отдельный CLI-deploy; automatic Git-trigger ещё не включён. Исходный Supabase-site сохранён.

@@ -1,0 +1,40 @@
+{
+  "site": "https://kirman442-uad-step08.netlify.app",
+  "checkedAt": "2026-10-12T15:14:24.803996+00:00",
+  "deployment": "6accf8a8a1755d1347ef51db",
+  "codeCommit": "4a25c531ced27f437389993837756d220223c7d8",
+  "checks": {
+    "defaultOverviewWithoutFullMapLoad": true,
+    "germany2025": 273007,
+    "nrw2025": 61521,
+    "germany2025Category3": 230100,
+    "cardSurvivesMenuReturn": true,
+    "resultAndCacheSurviveMenuReturn": true,
+    "nearby50mOpened": true,
+    "sameDataUsedForNearby": true,
+    "timeGermany2020to2024Pkw": 950740,
+    "explicitMap2024PkwCategory3": 169153,
+    "cacheTwoYearsMiB": 53.88,
+    "backForward": true,
+    "cache32MiB": 26.72,
+    "parquetBrowserScenarioCounts": [
+      273007,
+      61521,
+      25508,
+      13162
+    ],
+    "arrowBrowserScenarioCounts": [
+      273007,
+      61521,
+      25508,
+      13162
+    ],
+    "consoleErrors": []
+  },
+  "limits": [
+    "Two real network benchmark runs, not a stable speed comparison",
+    "Physical phone validation remains separate",
+    "Analytics remain embedded prototypes; no native port in this release",
+    "No automatic GitHub continuous deployment configured"
+  ]
+}

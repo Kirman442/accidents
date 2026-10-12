@@ -1,0 +1,1232 @@
+{
+  "site": "https://kirman442-uad-step08.netlify.app",
+  "checkedAt": "2026-10-12T15:02:48.711Z",
+  "generation": "404fc8c681334561911392783520c8f2",
+  "dataFiles": 195,
+  "files": [
+    {
+      "path": "analytics/accident_summaries.json",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 246854
+    },
+    {
+      "path": "arrow/file/2020/uland_01.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 237445
+    },
+    {
+      "path": "arrow/file/2020/uland_02.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 163475
+    },
+    {
+      "path": "arrow/file/2020/uland_03.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 563840
+    },
+    {
+      "path": "arrow/file/2020/uland_04.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 57295
+    },
+    {
+      "path": "arrow/file/2020/uland_05.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 1130444
+    },
+    {
+      "path": "arrow/file/2020/uland_06.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 390020
+    },
+    {
+      "path": "arrow/file/2020/uland_07.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 292317
+    },
+    {
+      "path": "arrow/file/2020/uland_08.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 659812
+    },
+    {
+      "path": "arrow/file/2020/uland_09.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 928721
+    },
+    {
+      "path": "arrow/file/2020/uland_10.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 76213
+    },
+    {
+      "path": "arrow/file/2020/uland_11.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 243481
+    },
+    {
+      "path": "arrow/file/2020/uland_12.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 203836
+    },
+    {
+      "path": "arrow/file/2020/uland_13.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 114317
+    },
+    {
+      "path": "arrow/file/2020/uland_14.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 281233
+    },
+    {
+      "path": "arrow/file/2020/uland_15.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 169646
+    },
+    {
+      "path": "arrow/file/2020/uland_16.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 128570
+    },
+    {
+      "path": "arrow/file/2021/uland_01.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 244178
+    },
+    {
+      "path": "arrow/file/2021/uland_02.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 165675
+    },
+    {
+      "path": "arrow/file/2021/uland_03.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 594384
+    },
+    {
+      "path": "arrow/file/2021/uland_04.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 58699
+    },
+    {
+      "path": "arrow/file/2021/uland_05.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 1075290
+    },
+    {
+      "path": "arrow/file/2021/uland_06.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 398692
+    },
+    {
+      "path": "arrow/file/2021/uland_07.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 290108
+    },
+    {
+      "path": "arrow/file/2021/uland_08.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 667885
+    },
+    {
+      "path": "arrow/file/2021/uland_09.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 970542
+    },
+    {
+      "path": "arrow/file/2021/uland_10.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 77727
+    },
+    {
+      "path": "arrow/file/2021/uland_11.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 240863
+    },
+    {
+      "path": "arrow/file/2021/uland_12.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 217426
+    },
+    {
+      "path": "arrow/file/2021/uland_13.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 117280
+    },
+    {
+      "path": "arrow/file/2021/uland_14.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 274346
+    },
+    {
+      "path": "arrow/file/2021/uland_15.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 168700
+    },
+    {
+      "path": "arrow/file/2021/uland_16.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 123782
+    },
+    {
+      "path": "arrow/file/2022/uland_01.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 252300
+    },
+    {
+      "path": "arrow/file/2022/uland_02.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 193776
+    },
+    {
+      "path": "arrow/file/2022/uland_03.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 633045
+    },
+    {
+      "path": "arrow/file/2022/uland_04.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 59917
+    },
+    {
+      "path": "arrow/file/2022/uland_05.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 1215268
+    },
+    {
+      "path": "arrow/file/2022/uland_06.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 434343
+    },
+    {
+      "path": "arrow/file/2022/uland_07.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 308731
+    },
+    {
+      "path": "arrow/file/2022/uland_08.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 716217
+    },
+    {
+      "path": "arrow/file/2022/uland_09.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 1014072
+    },
+    {
+      "path": "arrow/file/2022/uland_10.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 76963
+    },
+    {
+      "path": "arrow/file/2022/uland_11.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 261487
+    },
+    {
+      "path": "arrow/file/2022/uland_12.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 215489
+    },
+    {
+      "path": "arrow/file/2022/uland_13.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 122748
+    },
+    {
+      "path": "arrow/file/2022/uland_14.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 312112
+    },
+    {
+      "path": "arrow/file/2022/uland_15.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 182809
+    },
+    {
+      "path": "arrow/file/2022/uland_16.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 134925
+    },
+    {
+      "path": "arrow/file/2023/uland_01.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 266130
+    },
+    {
+      "path": "arrow/file/2023/uland_02.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 184804
+    },
+    {
+      "path": "arrow/file/2023/uland_03.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 602076
+    },
+    {
+      "path": "arrow/file/2023/uland_04.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 61476
+    },
+    {
+      "path": "arrow/file/2023/uland_05.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 1250740
+    },
+    {
+      "path": "arrow/file/2023/uland_06.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 428735
+    },
+    {
+      "path": "arrow/file/2023/uland_07.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 302835
+    },
+    {
+      "path": "arrow/file/2023/uland_08.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 694182
+    },
+    {
+      "path": "arrow/file/2023/uland_09.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 977394
+    },
+    {
+      "path": "arrow/file/2023/uland_10.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 76254
+    },
+    {
+      "path": "arrow/file/2023/uland_11.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 244793
+    },
+    {
+      "path": "arrow/file/2023/uland_12.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 211414
+    },
+    {
+      "path": "arrow/file/2023/uland_13.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 116637
+    },
+    {
+      "path": "arrow/file/2023/uland_14.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 297902
+    },
+    {
+      "path": "arrow/file/2023/uland_15.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 180283
+    },
+    {
+      "path": "arrow/file/2023/uland_16.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 133169
+    },
+    {
+      "path": "arrow/file/2024/uland_01.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 268034
+    },
+    {
+      "path": "arrow/file/2024/uland_02.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 168983
+    },
+    {
+      "path": "arrow/file/2024/uland_03.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 598255
+    },
+    {
+      "path": "arrow/file/2024/uland_04.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 59111
+    },
+    {
+      "path": "arrow/file/2024/uland_05.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 1264174
+    },
+    {
+      "path": "arrow/file/2024/uland_06.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 422110
+    },
+    {
+      "path": "arrow/file/2024/uland_07.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 297585
+    },
+    {
+      "path": "arrow/file/2024/uland_08.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 694304
+    },
+    {
+      "path": "arrow/file/2024/uland_09.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 992512
+    },
+    {
+      "path": "arrow/file/2024/uland_10.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 78147
+    },
+    {
+      "path": "arrow/file/2024/uland_11.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 245707
+    },
+    {
+      "path": "arrow/file/2024/uland_12.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 214646
+    },
+    {
+      "path": "arrow/file/2024/uland_13.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 115725
+    },
+    {
+      "path": "arrow/file/2024/uland_14.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 311293
+    },
+    {
+      "path": "arrow/file/2024/uland_15.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 170294
+    },
+    {
+      "path": "arrow/file/2024/uland_16.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 147118
+    },
+    {
+      "path": "arrow/file/2025/uland_01.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 276993
+    },
+    {
+      "path": "arrow/file/2025/uland_02.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 183536
+    },
+    {
+      "path": "arrow/file/2025/uland_03.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 599570
+    },
+    {
+      "path": "arrow/file/2025/uland_04.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 62727
+    },
+    {
+      "path": "arrow/file/2025/uland_05.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 1405330
+    },
+    {
+      "path": "arrow/file/2025/uland_06.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 459803
+    },
+    {
+      "path": "arrow/file/2025/uland_07.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 341248
+    },
+    {
+      "path": "arrow/file/2025/uland_08.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 753660
+    },
+    {
+      "path": "arrow/file/2025/uland_09.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 1080520
+    },
+    {
+      "path": "arrow/file/2025/uland_10.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 87720
+    },
+    {
+      "path": "arrow/file/2025/uland_11.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 292493
+    },
+    {
+      "path": "arrow/file/2025/uland_12.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 227920
+    },
+    {
+      "path": "arrow/file/2025/uland_13.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 129270
+    },
+    {
+      "path": "arrow/file/2025/uland_14.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 321547
+    },
+    {
+      "path": "arrow/file/2025/uland_15.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 196890
+    },
+    {
+      "path": "arrow/file/2025/uland_16.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 147232
+    },
+    {
+      "path": "arrow/file/analytics/fleet_snapshots.arrow.br",
+      "status": 200,
+      "encoding": "br",
+      "bytes": 139503
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_01.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 205481
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_02.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 137168
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_03.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 525535
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_04.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 55541
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_05.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 1088477
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_06.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 333126
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_07.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 257404
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_08.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 619549
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_09.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 901868
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_10.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 68272
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_11.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 206919
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_12.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 182005
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_13.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 104410
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_14.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 247220
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_15.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 144397
+    },
+    {
+      "path": "parquet/zstd10/2020/uland_16.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 112274
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_01.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 210079
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_02.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 144717
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_03.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 555033
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_04.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 54426
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_05.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 1027633
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_06.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 343142
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_07.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 255767
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_08.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 624114
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_09.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 941036
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_10.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 69438
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_11.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 208305
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_12.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 185239
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_13.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 104232
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_14.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 241478
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_15.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 143009
+    },
+    {
+      "path": "parquet/zstd10/2021/uland_16.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 112668
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_01.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 218408
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_02.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 161746
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_03.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 596761
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_04.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 58127
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_05.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 1188658
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_06.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 387133
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_07.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 271481
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_08.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 676294
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_09.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 989862
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_10.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 71583
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_11.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 223488
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_12.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 192319
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_13.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 107647
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_14.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 273578
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_15.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 154877
+    },
+    {
+      "path": "parquet/zstd10/2022/uland_16.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 121998
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_01.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 230452
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_02.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 154678
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_03.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 572049
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_04.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 58625
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_05.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 1262930
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_06.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 380346
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_07.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 265802
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_08.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 664794
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_09.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 966299
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_10.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 70062
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_11.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 204696
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_12.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 190077
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_13.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 106648
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_14.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 261383
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_15.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 152108
+    },
+    {
+      "path": "parquet/zstd10/2023/uland_16.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 120916
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_01.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 232454
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_02.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 149800
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_03.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 570084
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_04.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 57217
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_05.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 1262500
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_06.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 373568
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_07.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 262211
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_08.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 664877
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_09.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 974785
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_10.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 69431
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_11.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 205708
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_12.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 193419
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_13.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 106387
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_14.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 269033
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_15.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 149937
+    },
+    {
+      "path": "parquet/zstd10/2024/uland_16.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 127171
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_01.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 241099
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_02.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 160853
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_03.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 559580
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_04.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 61009
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_05.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 1374985
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_06.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 414459
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_07.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 299141
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_08.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 710521
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_09.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 1044925
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_10.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 77821
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_11.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 246334
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_12.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 204277
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_13.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 117466
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_14.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 281825
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_15.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 164508
+    },
+    {
+      "path": "parquet/zstd10/2025/uland_16.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 132625
+    },
+    {
+      "path": "parquet/zstd10/analytics/fleet_snapshots.parquet",
+      "status": 200,
+      "encoding": "identity",
+      "bytes": 135972
+    }
+  ],
+  "pages": [
+    {
+      "path": "/",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "path": "/accidents/app.html",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "path": "/accidents/",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "path": "/accidents/files.html",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "path": "/accidents/benchmark.html",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "path": "/accidents/supabase.html",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "path": "/accidents/prototypes/overview-embedded.html",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "path": "/accidents/prototypes/time-embedded.html",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "path": "/accidents/prototypes/severity-embedded.html",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    {
+      "path": "/accidents/assets/parquet_wasm_bg-DrNke8Bl.wasm",
+      "status": 200,
+      "contentType": "application/wasm"
+    }
+  ],
+  "unknownAssetStatus": 404,
+  "passed": true
+}
