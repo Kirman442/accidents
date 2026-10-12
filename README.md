@@ -121,3 +121,7 @@ The third standalone prototype is `prototypes/severity-mockup.html`: outcome cat
 ## Подготовка UI/UX времени после шага09 · 2026-10-12
 
 База `79ff7eb`. Отдельный mockup `prototypes/time-layout-lab.html` с CSS/controls: три порядка, ширина1190/1440, перестановка, четыре периода/24часа/столбцы дней, месяцы по годам с числами/таблицей, числовые шкалы и календарные детали. Общие filters territory/years/group; локальные day/hour и season/year-view не имитируют отсутствующий joint month×weekday×hour. Исходные агрегаты сохранены. Проверены календарь/суммы, browser filters/reorder/mobile; console errors нет. Документация `README_09_time_layout_lab.md`, архив `UAD_data/09_step_Time_layout_lab.zip`. Приложение/Netlify не менялись; React-шаг10 не начат.
+
+## Сезонный профиль линией · 2026-10-12
+
+База `36cf494`. По прямому уточнению пользователя месячные столбцы заменены адаптивной линией с 12 точками. Убраны min-width560px и горизонтальный scroll блока; viewBox рассчитывается по фактическому контейнеру. На узкой ширине оставлены четыре подписи месяцев, точные значения доступны на точках при hover/focus/click и Enter/Space, включая count и календарный знаменатель. Режимы count/daily/share и данные сохранены. Проверено: Hamburg2020–2025 июнь4454 ДТП/180дней=24.74, доля10.84%; 12точек; при390×844 panelWidth=panelScrollWidth317, document375/375; console errors нет. Снимок UAD_data/09-time-seasonal-line.jpg; архив UAD_data/09_step_Time_seasonal_line.zip. Приложение/Netlify не менялись.
