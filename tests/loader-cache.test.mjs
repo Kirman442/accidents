@@ -23,6 +23,7 @@ function environment(){
     cancel(id){this.cancelled.add(id);},close(){},
     async run(slot,task){
       this.calls.push(task);if(task.type==='drop')return {dropped:true};
+      if(task.type==='query'){await (this.hold||Promise.resolve());return task.lands.map(land=>({land,mask:new Uint8Array([1]),count:1,facets:{}}));}
       this.active++;this.peak=Math.max(this.active,this.peak);
       try{
         await (this.hold || Promise.resolve());
@@ -92,4 +93,17 @@ test('A closed worker pool invalidates cached sources and recreates before retry
   await loader.select(2025,'arrow');
   assert.equal(pool.calls.filter(t=>t.type==='load').length,32);
   assert.equal(updates.at(-1).fromCache,false);loader.close();
+});
+
+test('Land queries reuse loaded sources, route to owning workers and never start loads',async()=>{
+ const {loader,pool}=environment();await loader.select(2025,'arrow');
+ for(const lands of [[1],[1,5,9,13],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],[1]]){
+  const q=await loader.query(2025,'arrow',lands,{});assert.deepEqual(q.map(p=>p.land).sort((a,b)=>a-b),lands);
+ }
+ assert.equal(pool.calls.filter(t=>t.type==='load').length,16);loader.close();
+});
+test('Query result for previous year is rejected after selection changes',async()=>{
+ const {loader,pool}=environment();await loader.select(2025,'arrow');let release;
+ pool.hold=new Promise(r=>release=r);const rejected=assert.rejects(loader.query(2025,'arrow',[1],{}),{name:'AbortError'});
+ const next=loader.select(2024,'arrow');release();pool.hold=null;await rejected;await next;loader.close();
 });

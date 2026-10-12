@@ -5,9 +5,10 @@ import {Map as MapView} from '@vis.gl/react-maplibre';
 import RuntimeWorker from './runtime.worker.js?worker';
 import {RuntimePool} from './pool.js';
 import {FileLoader} from './loader.js';
-import {validateCatalog} from './catalog.js';
+import {validateCatalog,catalogYears} from './catalog.js';
 import {combineStats} from '../benchmark/analytics.js';
 import Overview from './Overview.jsx';
+import FilterMap from './FilterMap.jsx';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './files.css';
 const names=['Все земли','Schleswig-Holstein','Hamburg','Niedersachsen','Bremen','Nordrhein-Westfalen','Hessen','Rheinland-Pfalz','Baden-Württemberg','Bayern','Saarland','Berlin','Brandenburg','Mecklenburg-Vorpommern','Sachsen','Sachsen-Anhalt','Thüringen'];
@@ -20,7 +21,7 @@ const initialLand=mapOnly&&/^([0-9]|1[0-6])$/.test(query.get('land')||'')?Number
 export default function FilesApp(){
   const loader=useRef(null),selection=useRef({year:initialYear,format:'arrow',budget:window.matchMedia('(max-width:700px)').matches?32:100});
   const [options,setOptions]=useState(selection.current),[land,setLand]=useState(initialLand),[error,setError]=useState('');
-  const [generation,setGeneration]=useState(null);
+  const [generation,setGeneration]=useState(null),[years,setYears]=useState([]);
   const [view,setView]=useState({state:'catalog',parts:[],loaded:0,cache:{entries:[],bytes:0,limitBytes:options.budget*1048576}});
   useEffect(()=>{
     const controller=new AbortController();
@@ -28,7 +29,10 @@ export default function FilesApp(){
       if(!r.ok)throw new Error('Каталог данных недоступен: HTTP '+r.status);return r.json();
     }))).then(([manifest,summaries])=>{
       if(controller.signal.aborted)return;
-      setGeneration(manifest.generation);
+      const available=catalogYears(validateCatalog(manifest));setYears(available);
+      const supplied=Number(query.get('year'));
+      selection.current={...selection.current,year:mapOnly&&available.includes(supplied)?supplied:available.at(-1)};
+      setOptions(selection.current);setGeneration(manifest.generation);
       loader.current=new FileLoader({manifest:validateCatalog(manifest),summaries,base,pool:new RuntimePool(RuntimeWorker),
         onUpdate:setView,limitBytes:selection.current.budget*1048576});
       const {year,format,budget}=selection.current;
@@ -53,19 +57,11 @@ export default function FilesApp(){
   const status=view.state==='ready'?(view.fromCache?'Год восстановлен из памяти, без скачивания':'Год загружен и проверен'):
     view.state==='loading'?`Загружаем ${view.year}: ${view.loaded}/16 земель`:
       view.state==='catalog'?'Читаем каталог данных…':view.state==='switching'?'Переключаем год…':view.state==='error'?'Ошибка загрузки':'Загрузка остановлена или кеш очищен';
-  if(mapOnly)return <main className="map-only" aria-label="Карта ДТП">
-    <div className="map-only-canvas"><DeckGL initialViewState={{longitude:10.4,latitude:51.1,zoom:5}} controller layers={layers}>
-      <MapView mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json" attributionControl /></DeckGL></div>
-    <section className="map-only-status"><strong>{nf.format(stats.count)} ДТП · {options.year}</strong>
-      <p>{names[land]}</p><p role="status">{status}</p>
-      {(error||view.error)&&<><p role="alert">{error||view.error}</p><button onClick={()=>loader.current?request({...options}):window.location.reload()}>Повторить загрузку</button></>}
-      <small>Земли появляются по мере загрузки. Масштаб: колесо / щипок; перемещение: перетаскивание.</small>
-    </section>
-  </main>;
+  if(mapOnly)return <FilterMap loader={loader} view={view} options={options} land={land} names={names} years={years} request={request} setLand={setLand}/>;
   return <main className="files-app">
     <header><h1>Unfallatlas · файловая версия</h1><p>ДТП, динамика по годам и автопарк Германии. Земли на карте появляются по мере готовности.</p></header>
     <section className="file-controls">
-      <label>Год<select value={options.year} onChange={e=>request({...options,year:Number(e.target.value)})}>{[2020,2021,2022,2023,2024,2025].map(y=><option key={y}>{y}</option>)}</select></label>
+      <label>Год<select value={options.year} onChange={e=>request({...options,year:Number(e.target.value)})}>{years.map(y=><option key={y}>{y}</option>)}</select></label>
       <label>Источник<select value={options.format} onChange={e=>request({...options,format:e.target.value})}><option value="arrow">Arrow + Brotli</option><option value="parquet">Parquet ZSTD 10</option></select></label>
       <label>Память данных<select value={options.budget} onChange={e=>request({...options,budget:Number(e.target.value)})}><option value="100">Обычный · 100 МиБ</option><option value="32">Облегчённый · 32 МиБ</option></select></label>
       <label>Земля<select value={land} onChange={e=>setLand(Number(e.target.value))}>{names.map((name,i)=><option value={i} key={i}>{name}</option>)}</select></label>

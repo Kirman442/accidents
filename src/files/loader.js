@@ -51,7 +51,7 @@ export class FileLoader {
       try {
         parts.sort((a,b)=>a.land-b.land);
         verifySummary(combineStats(parts.map(p=>p.stats)),this.summaries.years[year].national);
-        entry={key:spec.key,year,format,parts,bytes:parts.reduce((n,p)=>n+p.sourceBytes+p.snapshotBytes,0)};
+        entry={key:spec.key,year,format,parts,bytes:parts.reduce((n,p)=>n+p.sourceBytes+p.snapshotBytes+p.ids.length*2,0)};
         if(entry.bytes>spec.reservedBytes)throw new Error('Фактические буферы превысили резерв памяти');
         this.cache.put(entry);this.active=null;
         this.emit({state:'ready',year,format,parts,fromCache:false,loaded:16});return entry;
@@ -60,6 +60,16 @@ export class FileLoader {
     });
     const guarded=operation.catch(error=>{if(epoch===this.epoch && error.name!=='AbortError')this.emit({state:'error',year,format,parts:[],loaded:0,error:error.message});throw error;});
     this.operation=guarded;return guarded;
+  }
+  async query(year,format,lands,filters) {
+    const spec=datasetSpec(this.manifest,this.base,year,format),epoch=this.epoch;
+    if(this.closed||this.pool.closed)throw aborted();
+    const parts=await Promise.all(this.pool.slots.map((_,slot)=>{
+      const assigned=lands.filter(land=>(land-1)%4===slot);
+      return assigned.length?this.pool.run(slot,{type:'query',key:spec.key,lands:assigned,filters}):[];
+    }));
+    if(epoch!==this.epoch||this.closed)throw aborted();
+    return parts.flat();
   }
   clear() {
     const epoch=++this.epoch;this.abortActive();
