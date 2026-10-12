@@ -1,0 +1,84 @@
+{
+  "binary": {
+    "status": "complete",
+    "generation": "404fc8c681334561911392783520c8f2",
+    "files": 891,
+    "shards": 96,
+    "bytes": 605221738,
+    "invalid": [],
+    "manifestSHA256": "9971e31198d38a900f65e07fe4e432fa5095ef3aaca79f1dcdce7c3e78f81806"
+  },
+  "prepared": {
+    "status": "complete",
+    "total": 1543886,
+    "files": 9,
+    "invalid": [],
+    "manifestSHA256": "f50268c4bed8178bd026e9b968d8894e90f4b64383089ca292f3be182694f039"
+  },
+  "archives": [
+    {
+      "name": "01_step_Loader_and_cache.zip",
+      "bytes": 198090,
+      "sha256": "d8adba746d6e3db22e9a67b28a3159dcf2383aa580a5460130040caf723f3d13",
+      "hashMatches": true,
+      "commit": "94c3ba13aced0623aea454aa9c3a4e9e05d05a43",
+      "files": 67
+    },
+    {
+      "name": "02_step_Overview_and_fleet.zip",
+      "bytes": 215246,
+      "sha256": "9801d66a501ebc5085f1de4f094892b1041672aff265f09e13a7b0e00c7d9d3d",
+      "hashMatches": true,
+      "commit": "1f77084287ab5e27c2e78aaee4bf513ee92e45cc",
+      "files": 73
+    },
+    {
+      "name": "03_step_Analytics_mockups.zip",
+      "bytes": 377908,
+      "sha256": "e71dd28a356c5983de65099b1889be6500faddae20d102c9afe44645e66e63c4",
+      "hashMatches": true,
+      "commit": "35c27644dcf515316f3615a248d376630c4a6560",
+      "files": 77
+    },
+    {
+      "name": "04_step_Severity_and_conditions.zip",
+      "bytes": 421371,
+      "sha256": "2c9f38a022395d7684c7a9b6790329f9ac1396e5cb7aa51b2ad42b534f67b55a",
+      "hashMatches": true,
+      "commit": "efebddacb6c9f8b084ecca93e30822b67202a0d9",
+      "files": 79
+    },
+    {
+      "name": "05_step_Map_mockup.zip",
+      "bytes": 431352,
+      "sha256": "f1003e9f2955a2a4a4d15bcdf22122e38e13281af9165ca6c3cd84b9f617e0e7",
+      "hashMatches": true,
+      "commit": "5e9679bfadd13d673120b0248b3dfc2857cdcee1",
+      "files": 81
+    },
+    {
+      "name": "06_step_Map_filters_and_cache.zip",
+      "bytes": 445807,
+      "sha256": "72207d44d61c4672a93151a5b4b86f3cc8a792215aa605c1b402175ddc3ae192",
+      "hashMatches": true,
+      "commit": "21b5a91cd9ceb1bcf2760f409ebe1eee56bba8ac",
+      "files": 86
+    },
+    {
+      "name": "07_step_Accident_card.zip",
+      "bytes": 460976,
+      "sha256": "380788902e2f31e74e3cd03750e8cf5f218947c33d33349f599d82a17bba2dd2",
+      "hashMatches": true,
+      "commit": "eb0e8702bbde3956aa2e81d6455ad165820ee6c0",
+      "files": 91
+    },
+    {
+      "name": "08_step_App_shell_and_shared_cache.zip",
+      "bytes": 478562,
+      "sha256": "fea254bc7936ad8bbc0f54079a5aa4dee9d2d84afb835663d7b96f3f929c4e44",
+      "hashMatches": true,
+      "commit": "975ead24038b72d64277aae7696ded63caad1c7b",
+      "files": 103
+    }
+  ]
+}

@@ -1,0 +1,468 @@
+{
+  "checkedAt": "2026-10-12T14:26:37.120722+00:00",
+  "github": {
+    "main": {
+      "sha": "09178b18c8c65e43b63d206bb04b63b3c35746d3",
+      "message": "Initial commit",
+      "date": "2025-03-30T18:18:09Z",
+      "parents": []
+    },
+    "gh-pages": {
+      "sha": "57f3d9d935fba447a8c1c384a0de8e609bdeafc8",
+      "message": "Updates",
+      "date": "2026-10-11T10:18:52Z",
+      "parents": [
+        "23a34c144a4675ec0338338fc191d6402d4f72e0"
+      ]
+    },
+    "codex/uad-standalone": {
+      "sha": "11ba48c2246ebf99631f573cbd0eec8876a38df2",
+      "message": "Restore progressive land rendering with four concurrent loads",
+      "date": "2026-10-11T09:44:46Z",
+      "parents": [
+        "00ea1b3ea7f0af121ba35c4f9ea07ed900e4d596"
+      ]
+    },
+    "master": {
+      "sha": "6a743a399ef82edaf6b8300ab88ded55b3c3b9c2",
+      "message": "optimised the loading process and fixed the filters logic",
+      "date": "2026-09-29T18:21:13Z",
+      "parents": [
+        "de2fb0e041a05df6bc506d604d753dd70c3e5e7f"
+      ]
+    }
+  },
+  "sites": {
+    "https://kirman442.github.io/accidents/": {
+      "status": 200,
+      "title": "Germany Traffic accidents",
+      "scripts": [
+        "/accidents/assets/index-CBrbXrle.js"
+      ],
+      "supabaseRefs": [
+        "fiambamorokfphkzdjxc"
+      ],
+      "directLandLoader": true,
+      "parentMention": false,
+      "standaloneLoaderMarker": false,
+      "scriptsInspected": [
+        "/accidents/assets/index-CBrbXrle.js",
+        "./components-C1z3eeAX.js"
+      ],
+      "matchesRemoteGhPagesHtml": true
+    },
+    "https://kirman442-arrow-parquet-prototype.netlify.app/": {
+      "status": 200,
+      "title": "Страны · Arrow / Parquet",
+      "scripts": [
+        "/assets/index-CcadcDkx.js"
+      ]
+    }
+  },
+  "supabase": {
+    "target": {
+      "url": "https://fiambamorokfphkzdjxc.supabase.co",
+      "probe": "read-only limit=1 and count=exact; not a full loading benchmark",
+      "lands": [
+        {
+          "land": 1,
+          "status": 206,
+          "total": 11657,
+          "returned": 1
+        },
+        {
+          "land": 2,
+          "status": 206,
+          "total": 7332,
+          "returned": 1
+        },
+        {
+          "land": 3,
+          "status": 206,
+          "total": 26605,
+          "returned": 1
+        },
+        {
+          "land": 4,
+          "status": 206,
+          "total": 2703,
+          "returned": 1
+        },
+        {
+          "land": 5,
+          "status": 206,
+          "total": 59640,
+          "returned": 1
+        },
+        {
+          "land": 6,
+          "status": 206,
+          "total": 18255,
+          "returned": 1
+        },
+        {
+          "land": 7,
+          "status": 206,
+          "total": 12398,
+          "returned": 1
+        },
+        {
+          "land": 8,
+          "status": 206,
+          "total": 31502,
+          "returned": 1
+        },
+        {
+          "land": 9,
+          "status": 206,
+          "total": 46247,
+          "returned": 1
+        },
+        {
+          "land": 10,
+          "status": 206,
+          "total": 2993,
+          "returned": 1
+        },
+        {
+          "land": 11,
+          "status": 206,
+          "total": 12329,
+          "returned": 1
+        },
+        {
+          "land": 12,
+          "status": 206,
+          "total": 8216,
+          "returned": 1
+        },
+        {
+          "land": 13,
+          "status": 206,
+          "total": 4601,
+          "returned": 1
+        },
+        {
+          "land": 14,
+          "status": 206,
+          "total": 12513,
+          "returned": 1
+        },
+        {
+          "land": 15,
+          "status": 206,
+          "total": 6880,
+          "returned": 1
+        },
+        {
+          "land": 16,
+          "status": 206,
+          "total": 5177,
+          "returned": 1
+        }
+      ],
+      "total": 269048
+    },
+    "schema": {
+      "version": "PostgreSQL 17.11 on aarch64-unknown-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit",
+      "tables": [
+        {
+          "name": "unfallatlas_uland_01",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_02",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_03",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_04",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_05",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_06",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_07",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_08",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_09",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_10",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_11",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_12",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_13",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_14",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_15",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        },
+        {
+          "name": "unfallatlas_uland_16",
+          "is_partition": false,
+          "rls": true,
+          "anon_select": true
+        }
+      ],
+      "policies": [
+        {
+          "table": "unfallatlas_uland_01",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_02",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_03",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_04",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_05",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_06",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_07",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_08",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_09",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_10",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_11",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_12",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_13",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_14",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_15",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        },
+        {
+          "table": "unfallatlas_uland_16",
+          "name": "public_read",
+          "roles": [
+            "anon",
+            "authenticated"
+          ],
+          "cmd": "SELECT",
+          "qual": "true"
+        }
+      ],
+      "roles": [
+        {
+          "name": "authenticated",
+          "config": [
+            "statement_timeout=8s"
+          ]
+        },
+        {
+          "name": "anon",
+          "config": [
+            "statement_timeout=3s"
+          ]
+        },
+        {
+          "name": "authenticator",
+          "config": [
+            "session_preload_libraries=supautils, safeupdate",
+            "statement_timeout=8s",
+            "lock_timeout=8s"
+          ]
+        }
+      ]
+    }
+  },
+  "local": {
+    "5175": {
+      "error": "URLError"
+    },
+    "5186": {
+      "error": "URLError"
+    },
+    "5187": {
+      "status": 200,
+      "path": "/accidents/app.html"
+    },
+    "5188": {
+      "status": 200,
+      "path": "/map-mockup.html"
+    }
+  }
+}
