@@ -32,3 +32,7 @@
 
 
 Netlify preview **опубликован**: https://kirman442-uad-step08.netlify.app/, code4a25c53, deploy6accf8a8a1755d1347ef51db. Gitbranch codex/uad-netlify-step08 запушена;195payload SHA/HTTP и реальное Arrow/Parquet browser чтение прошли. Подробности/ограничения — README_08_release_Netlify_preview.md. Автоматический Git-trigger не подключён.
+
+## Дополнение после шага 08 — тема карты · 2026-10-12
+
+База `8080a2b`. В общем header после «Показать на карте →» добавлен выбор тёмной CARTO Dark Matter (по умолчанию) и светлой Positron. Выбор сохраняется в браузере; карта, карточка, фильтры и кеш сохраняются при переключении. Проверки и границы: `README_08_map_theme.md`. Локальный снимок: `UAD_data/08_step_Map_theme.zip`. Шаг 09 не начат; push/deploy не выполнялись.

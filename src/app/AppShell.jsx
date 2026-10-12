@@ -10,7 +10,10 @@ const NativeMap=lazy(()=>import('./NativeMap.jsx'));
 const names=['Германия','Schleswig-Holstein','Hamburg','Niedersachsen','Bremen','Nordrhein-Westfalen','Hessen','Rheinland-Pfalz','Baden-Württemberg','Bayern','Saarland','Berlin','Brandenburg','Mecklenburg-Vorpommern','Sachsen','Sachsen-Anhalt','Thüringen'];
 const base=(import.meta.env.VITE_FILE_DATA_BASE_URL||import.meta.env.BASE_URL+'__binary/').replace(/\/?$/,'/');
 const storage='uad-shell-v1';
+const mapStyles={dark:'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',light:'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'};
 export default function AppShell(){
+  const [mapTheme,setMapTheme]=useState(()=>{try{return localStorage.getItem('uad-map-theme')==='light'?'light':'dark';}catch{return 'dark';}});
+  useEffect(()=>{try{localStorage.setItem('uad-map-theme',mapTheme);}catch{/* Theme remains usable without browser storage. */}},[mapTheme]);
   const loader=useRef(null),models=useRef(null),job=useRef(''),live=useRef(true),refs=useRef(null),nonce=useRef(0),remembered=useRef(new Set()),scrolls=useRef({});
   const [screen,setScreen]=useState(screenKey(new URLSearchParams(location.search).get('screen'))),[contexts,setContexts]=useState(null),[years,setYears]=useState([]);
   const [options,setOptions]=useState({year:2025,format:'arrow',budget:window.matchMedia('(max-width:700px)').matches?32:100}),[land,setLand]=useState(0);
@@ -96,6 +99,7 @@ export default function AppShell(){
           <label>Участники<select aria-label="Участники" value={context.group} onChange={e=>change('group',e.target.value)}>{Object.entries(groups).map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></label>
         </>}
         {screen!=='map'&&<button className="shell-map-link" onClick={()=>navigate('map',context)}>Показать на карте →</button>}
+        <label>Тема карты<select aria-label="Тема карты" value={mapTheme} onChange={e=>setMapTheme(e.target.value)}><option value="dark">Тёмная</option><option value="light">Светлая</option></select></label>
       </div>}
     </header>
     <p className="shell-cache" role="status">{loader.current?(view.state==='loading'?`Карта загружается: ${view.loaded}/16 земель · `:'')+'В памяти: '+(view.cache.entries.map(e=>e.year).join(', ')||'готовых годов пока нет')+' · '+(view.cache.bytes/1048576).toFixed(2)+' / '+options.budget+' МиБ':'Полные данные карты ещё не загружались.'}</p>
@@ -103,7 +107,7 @@ export default function AppShell(){
     {contexts&&<>
       {screen!=='map'&&<p className="shell-note">Пока это сохранённый макет аналитики. Отбор здесь: территория{screen==='overview'?' и год':', период и одна группа участников'}. Остальные фильтры карты остаются только на карте.</p>}
       {screen==='map'&&notice&&<p className="shell-note">{notice}</p>}
-      {visited.map&&<section hidden={screen!=='map'} aria-label="Экран карты"><Suspense fallback={<p>Готовим карту…</p>}><NativeMap loader={loader} view={view} options={options} land={land} names={names} years={years} request={request} setLand={setLand} active={screen==='map'} selectionControls={false} filterIntent={intent}/></Suspense></section>}
+      {visited.map&&<section hidden={screen!=='map'} aria-label="Экран карты"><Suspense fallback={<p>Готовим карту…</p>}><NativeMap loader={loader} view={view} options={options} land={land} names={names} years={years} request={request} setLand={setLand} active={screen==='map'} selectionControls={false} filterIntent={intent} mapStyle={mapStyles[mapTheme]}/></Suspense></section>}
       {['overview','time','severity'].filter(key=>visited[key]).map(key=><AnalyticFrame key={key} screen={key} title={screens[key]} context={contexts[key]} active={screen===key} onMessage={prototypeMessage}/>)}
     </>}
   </div></div>;

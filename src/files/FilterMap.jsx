@@ -8,7 +8,7 @@ import {PICK_LIMIT} from './record-details.js';
 import {emptyFilters,fields,participantNames,periods,seasons,mergeQueryParts,validateMapFilters,applyParticipantIntent} from './map-query.js';
 const nf=new Intl.NumberFormat('ru-RU'),extension=new DataFilterExtension({filterSize:1});
 const origin='http://127.0.0.1:5188';
-export default function FilterMap({loader,view,options,land,names,years,request,setLand,active=true,selectionControls=true,filterIntent=null}){
+export default function FilterMap({loader,view,options,land,names,years,request,setLand,active=true,selectionControls=true,filterIntent=null,mapStyle='https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'}){
   const [filters,setFilters]=useState(()=>{
     let f=emptyFilters();const group=new URLSearchParams(location.search).get('group');
     try{const saved=JSON.parse(sessionStorage.getItem('uad-map-filters')||'null');if(saved){validateMapFilters(saved);f={...f,...saved};}}catch{/* Ignore incompatible saved filters. */}
@@ -126,7 +126,7 @@ export default function FilterMap({loader,view,options,land,names,years,request,
   {(result.error||view.error)&&<p role="alert">{result.error||view.error}<button onClick={()=>request({...options})}>Повторить загрузку</button></p>}
   {selectionNotice&&<p className="filter-note" role="status">{selectionNotice}</p>}
   <div className={selection?'record-workspace with-card':'record-workspace'}><div className="filtered-canvas"><DeckGL ref={deck} onClick={pick} pickingRadius={6} initialViewState={{longitude:10.4,latitude:51.1,zoom:5}} controller layers={layers}>
-    <MapView mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json" attributionControl /></DeckGL></div>
+    <MapView mapStyle={mapStyle} attributionControl /></DeckGL></div>
     {selection&&<RecordCard key={selection.handle.year+':'+selection.handle.id} loader={loader} handle={selection.handle} choices={selection.choices} truncated={selection.truncated} names={names} format={options.format} filters={filters} lands={lands} ready={complete} onSelect={choose} onClose={()=>{setSelection(null);setSelectionNotice('');}}/>}
   </div>
   {!result.updating&&!loading&&!result.count&&!result.error&&<p className="filter-empty">Нет ДТП по выбранным условиям. Измените условия или сбросьте фильтры.</p>}

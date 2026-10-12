@@ -93,3 +93,7 @@ The third standalone prototype is `prototypes/severity-mockup.html`: outcome cat
 
 
 Публикация завершена: https://kirman442-uad-step08.netlify.app/. Ветка codex/uad-netlify-step08 наGitHub; новый live-check отчёт вREADME_08_release_Netlify_preview.md. Это отдельный CLI-deploy; automatic Git-trigger ещё не включён. Исходный Supabase-site сохранён.
+
+## Дополнение после шага 08 — тема карты · 2026-10-12
+
+База `8080a2b`. В общем header после «Показать на карте →» добавлен выбор тёмной CARTO Dark Matter (по умолчанию) и светлой Positron. Выбор сохраняется в браузере; карта, карточка, фильтры и кеш сохраняются при переключении. Проверки и границы: `README_08_map_theme.md`. Локальный снимок: `UAD_data/08_step_Map_theme.zip`. Шаг 09 не начат; push/deploy не выполнялись.
