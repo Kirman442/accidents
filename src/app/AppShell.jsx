@@ -4,6 +4,8 @@ import {RuntimePool} from '../files/pool.js';
 import {FileLoader} from '../files/loader.js';
 import {catalogYears,validateCatalog} from '../files/catalog.js';
 import AnalyticFrame from './AnalyticFrame.jsx';
+import NativeOverview from './NativeOverview.jsx';
+import {validateOverview} from '../files/overview-data.js';
 import {screens,groups,screenKey,contextFor,changeContext,initialShell,contextEqual,routeQuery,mapTransfer,firstVisitContext} from './shell-state.js';
 import './shell.css';
 const NativeMap=lazy(()=>import('./NativeMap.jsx'));
@@ -18,6 +20,7 @@ export default function AppShell(){
   const [screen,setScreen]=useState(screenKey(new URLSearchParams(location.search).get('screen'))),[contexts,setContexts]=useState(null),[years,setYears]=useState([]);
   const [options,setOptions]=useState({year:2025,format:'arrow',budget:window.matchMedia('(max-width:700px)').matches?32:100}),[land,setLand]=useState(0);
   const [visited,setVisited]=useState({}),[error,setError]=useState(''),[intent,setIntent]=useState(null),[notice,setNotice]=useState('');
+  const [overview,setOverview]=useState(null),[overviewError,setOverviewError]=useState(''),[overviewAttempt,setOverviewAttempt]=useState(0),[generation,setGeneration]=useState(null);
   const [view,setView]=useState({state:'idle',parts:[],loaded:0,cache:{entries:[],bytes:0,limitBytes:options.budget*1048576}});
   refs.current={screen,contexts,years,options,land,visited};
   useEffect(()=>{
@@ -27,12 +30,21 @@ export default function AppShell(){
         if(abort.signal.aborted)return;validateCatalog(manifest);const available=catalogYears(manifest);let saved={};
         try{saved=JSON.parse(sessionStorage.getItem(storage)||'{}');}catch{/* Optional preferences. */}
         const initial=initialShell(location.search,available,saved);
-        remembered.current=new Set([...initial.seen,initial.screen]);models.current={manifest,summaries};setYears(available);setContexts(initial.contexts);setScreen(initial.screen);
+        remembered.current=new Set([...initial.seen,initial.screen]);models.current={manifest,summaries};setGeneration(manifest.generation);setYears(available);setContexts(initial.contexts);setScreen(initial.screen);
         setOptions(o=>({...o,year:initial.contexts.map.year,format:initial.format,budget:initial.budget||o.budget}));setLand(initial.contexts.map.region);
         setVisited({[initial.screen]:true});
       }).catch(e=>{if(!abort.signal.aborted)setError(e.message);});
     return()=>{live.current=false;abort.abort();loader.current?.close();};
   },[]);
+  useEffect(()=>{
+    if(!visited.overview||!generation)return;
+    const controller=new AbortController();setOverviewError('');
+    fetch(import.meta.env.BASE_URL+'analytics/overview.json',{signal:controller.signal,cache:'no-store'})
+      .then(r=>{if(!r.ok)throw new Error('Обзор недоступен: HTTP '+r.status);return r.json();})
+      .then(data=>{if(!controller.signal.aborted)setOverview(validateOverview(data,generation));})
+      .catch(e=>{if(!controller.signal.aborted)setOverviewError(e.message);});
+    return()=>controller.abort();
+  },[visited.overview,generation,overviewAttempt]);
   const request=useCallback(next=>{
     if(!models.current)return;
     const key=next.year+':'+next.format+':'+next.budget;job.current=key;
@@ -81,7 +93,7 @@ export default function AppShell(){
   },[]);
   useEffect(()=>{const id=requestAnimationFrame(()=>window.scrollTo(0,scrolls.current[screen]||0));return()=>cancelAnimationFrame(id);},[screen]);
   const prototypeMessage=useCallback((source,message)=>{
-    const state=refs.current;if(!state.contexts||!['overview','time','severity'].includes(source))return;
+    const state=refs.current;if(!state.contexts||!['time','severity'].includes(source))return;
     if(message.type==='uad-prototype-navigate'){navigate(message.target,message.context);return;}
     const context=contextFor(source,message.context,state.years);
     setContexts(c=>contextEqual(c[source],context)?c:{...c,[source]:context});
@@ -105,10 +117,11 @@ export default function AppShell(){
     <p className="shell-cache" role="status">{loader.current?(view.state==='loading'?`Карта загружается: ${view.loaded}/16 земель · `:'')+'В памяти: '+(view.cache.entries.map(e=>e.year).join(', ')||'готовых годов пока нет')+' · '+(view.cache.bytes/1048576).toFixed(2)+' / '+options.budget+' МиБ':'Полные данные карты ещё не загружались.'}</p>
     {error&&<p role="alert">{error}{!contexts&&<button onClick={()=>location.reload()}>Повторить</button>}</p>}
     {contexts&&<>
-      {screen!=='map'&&<p className="shell-note">Пока это сохранённый макет аналитики. Отбор здесь: территория{screen==='overview'?' и год':', период и одна группа участников'}. Остальные фильтры карты остаются только на карте.</p>}
+      {['time','severity'].includes(screen)&&<p className="shell-note">Пока это сохранённый макет аналитики. Отбор здесь: территория, период и одна группа участников. Остальные фильтры карты остаются только на карте.</p>}
       {screen==='map'&&notice&&<p className="shell-note">{notice}</p>}
       {visited.map&&<section hidden={screen!=='map'} aria-label="Экран карты"><Suspense fallback={<p>Готовим карту…</p>}><NativeMap loader={loader} view={view} options={options} land={land} names={names} years={years} request={request} setLand={setLand} active={screen==='map'} selectionControls={false} filterIntent={intent} mapStyle={mapStyles[mapTheme]}/></Suspense></section>}
-      {['overview','time','severity'].filter(key=>visited[key]).map(key=><AnalyticFrame key={key} screen={key} title={screens[key]} context={contexts[key]} active={screen===key} onMessage={prototypeMessage}/>)}
+      {visited.overview&&<section hidden={screen!=='overview'} aria-label="Экран обзора"><NativeOverview data={overview} error={overviewError} onRetry={()=>setOverviewAttempt(n=>n+1)} context={contexts.overview} names={names} onRegion={region=>setContexts(c=>({...c,overview:changeContext('overview',c.overview,'region',region,years)}))} active={screen==='overview'}/></section>}
+      {['time','severity'].filter(key=>visited[key]).map(key=><AnalyticFrame key={key} screen={key} title={screens[key]} context={contexts[key]} active={screen===key} onMessage={prototypeMessage}/>)}
     </>}
   </div></div>;
 }
