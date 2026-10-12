@@ -2,4 +2,11 @@
 
 .shell-map-link{align-self:end;padding:9px 12px;background:#e5f2ed;color:#186859;border:1px solid #b9d4cc;border-radius:7px;font:13px system-ui;cursor:pointer}
 .shell-controls select{min-width:0}
+.shell-theme-control{display:grid;gap:4px;font-size:11px;color:#637a82;align-self:end}
+.shell-theme-buttons{display:flex;gap:3px;padding:3px;border:1px solid #c7d6d8;border-radius:12px;background:white}
+.shell-theme-buttons button{display:grid;place-items:center;width:40px;height:40px;border:1px solid transparent;border-radius:8px;background:transparent;color:#637a82;cursor:pointer}
+.shell-theme-buttons button:hover{background:#f0f5f4}
+.shell-theme-buttons button[aria-pressed=true]{background:#e4f2ee;border-color:#b9d4cc;color:#176e63}
+.shell-theme-buttons svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.shell-theme-buttons button:focus-visible{outline:2px solid #197b70;outline-offset:-3px}
 @media(max-width:850px){.shell-nav{min-width:0}}

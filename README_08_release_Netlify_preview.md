@@ -42,3 +42,8 @@ Remote-data build тоже прошёл: UAD_BINARY_DATA был намеренн
 Документация/publication metadata после размещения добавлены отдельным коммитом. Существующий GitHub Pages/Supabase сайт не менялся. Нет merge вmaster/main, нет новых таблиц/настроек БД. Automatic Git-triggered deployment не подключён: это явная CLI-публикация проверенной новой ветки.
 
 Архив исходников:UAD_data/08_step_Netlify_preview.zip, с точным HEAD вSTEP_SNAPSHOT и .sha256. Снимки:netlify-step08-desktop.png (карта/карточка), netlify-step08-cache32.png (32 МиБ). Данные/Netlify auth/.netlify/builds остаются внеGit.
+
+## Обновление кнопок темы · 2026-10-12
+
+По прямой команде пользователя опубликован вариант с луной и солнцем в общем header (README_08_map_theme_buttons.md). Deploy: `6acd1d75d7111fa190f5c6d7`. URL: https://kirman442-uad-step08.netlify.app/. Generation данных прежняя: `404fc8c681334561911392783520c8f2`; 195 payloads / 70 151 851 байт сверены по SHA-256 при сборке. Использован существующий кешированный Netlify CLI 27.11.2: глобальная версия 2.32.0 не поддерживает современную команду. TLS-проверка сохранена через --use-system-ca. Автодеплой и Supabase не изменялись.
+Живая браузерная проверка Netlify: обе подложки меняются кнопками; 2025 Германия — 273 007 ДТП, кеш 27.16 МиБ, пересчёт 214 мс остаётся тем же; console errors нет. Скриншот: UAD_data/08-map-theme-buttons-netlify.jpg.
