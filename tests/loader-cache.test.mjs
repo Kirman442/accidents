@@ -23,6 +23,8 @@ function environment(){
     cancel(id){this.cancelled.add(id);},close(){},
     async run(slot,task){
       this.calls.push(task);if(task.type==='drop')return {dropped:true};
+      if(task.type==='details'){await (this.hold||Promise.resolve());return task.handles.map(handle=>({handle,record:{year:Math.floor(handle.id/1e6),land:handle.land}}));}
+      if(task.type==='nearby'){await (this.hold||Promise.resolve());return task.lands.map(land=>({count:1,items:[{handle:{id:2025000000+land,land},distance:land,record:{land}}]}));}
       if(task.type==='query'){await (this.hold||Promise.resolve());return task.lands.map(land=>({land,mask:new Uint8Array([1]),count:1,facets:{}}));}
       this.active++;this.peak=Math.max(this.active,this.peak);
       try{
@@ -105,5 +107,20 @@ test('Land queries reuse loaded sources, route to owning workers and never start
 test('Query result for previous year is rejected after selection changes',async()=>{
  const {loader,pool}=environment();await loader.select(2025,'arrow');let release;
  pool.hold=new Promise(r=>release=r);const rejected=assert.rejects(loader.query(2025,'arrow',[1],{}),{name:'AbortError'});
+ const next=loader.select(2024,'arrow');release();pool.hold=null;await rejected;await next;loader.close();
+});
+
+test('Card and neighborhood reuse workers without loading, combine lands and limit payload',async()=>{
+ const {loader,pool}=environment();await loader.select(2025,'arrow');
+ const cards=await loader.details(2025,'arrow',[{id:2025000001,land:1},{id:2025000002,land:2}]);assert.equal(cards.length,2);
+ const near=await loader.nearby(2025,'arrow',[1,2,3,4,5],{}, {id:2025000001,longitude:10,latitude:53},20);
+ assert.equal(near.count,5);assert.deepEqual(near.items.map(i=>i.handle.land),[1,2,3,4,5]);
+ assert.equal(pool.calls.filter(t=>t.type==='load').length,16);
+ await assert.rejects(loader.details(2025,'arrow',[{id:2024000001,land:1}]));
+ await assert.rejects(loader.nearby(2025,'arrow',[1,1],{}, {},20));loader.close();
+});
+test('In-flight card response cannot survive selecting a different year',async()=>{
+ const {loader,pool}=environment();await loader.select(2025,'arrow');let release;
+ pool.hold=new Promise(r=>release=r);const rejected=assert.rejects(loader.details(2025,'arrow',[{id:2025000001,land:1}]),{name:'AbortError'});
  const next=loader.select(2024,'arrow');release();pool.hold=null;await rejected;await next;loader.close();
 });

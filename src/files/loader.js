@@ -1,3 +1,4 @@
+import {mergeNearby,NEAR_LIMIT,NEAR_RADIUS,PICK_LIMIT} from './record-details.js';
 import {BudgetCache} from './cache.js';
 import {datasetSpec} from './catalog.js';
 import {combineStats,verifySummary} from '../benchmark/analytics.js';
@@ -70,6 +71,26 @@ export class FileLoader {
     }));
     if(epoch!==this.epoch||this.closed)throw aborted();
     return parts.flat();
+  }
+  async details(year,format,handles){
+    if(!Array.isArray(handles)||!handles.length||handles.length>PICK_LIMIT||handles.some(h=>!Number.isInteger(h.land)||h.land<1||h.land>16||!Number.isSafeInteger(h.id)||Math.floor(h.id/1e6)!==year))throw new Error('Некорректный выбор ДТП');
+    const spec=datasetSpec(this.manifest,this.base,year,format),epoch=this.epoch;
+    if(this.closed||this.pool.closed)throw aborted();
+    const replies=await Promise.all(this.pool.slots.map((_,slot)=>{
+      const assigned=handles.filter(h=>(h.land-1)%4===slot);
+      return assigned.length?this.pool.run(slot,{type:'details',key:spec.key,handles:assigned}):[];
+    }));
+    if(epoch!==this.epoch||this.closed)throw aborted();return replies.flat();
+  }
+  async nearby(year,format,lands,filters,origin,take=20){
+    if(!Number.isInteger(take)||take<1||take>NEAR_LIMIT||!lands.length||lands.some(l=>!Number.isInteger(l)||l<1||l>16)||new Set(lands).size!==lands.length)throw new Error('Некорректная окрестность');
+    const spec=datasetSpec(this.manifest,this.base,year,format),epoch=this.epoch;
+    if(this.closed||this.pool.closed)throw aborted();
+    const replies=await Promise.all(this.pool.slots.map((_,slot)=>{
+      const assigned=lands.filter(l=>(l-1)%4===slot);
+      return assigned.length?this.pool.run(slot,{type:'nearby',key:spec.key,lands:assigned,filters,origin,take,radius:NEAR_RADIUS}):[];
+    }));
+    if(epoch!==this.epoch||this.closed)throw aborted();return mergeNearby(replies.flat(),0,take);
   }
   clear() {
     const epoch=++this.epoch;this.abortActive();

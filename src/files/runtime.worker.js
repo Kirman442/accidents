@@ -2,6 +2,7 @@ import {tableFromIPC} from 'apache-arrow';
 import initWasm,{readParquet} from 'parquet-wasm/esm';
 import wasmUrl from 'parquet-wasm/esm/parquet_wasm_bg.wasm?url';
 import {validateTable,selectTable,verifySummary} from '../benchmark/analytics.js';
+import {describeId,scanNearby} from './record-details.js';
 import {queryColumns} from './map-query.js';
 import {tableBufferBytes} from './buffers.js';
 let wasm;
@@ -13,6 +14,18 @@ self.onmessage=async ({data})=>{
   try {
     if(task.type==='drop'){
       datasets.delete(task.key);cancelled.delete(task.runId);self.postMessage({id,result:{dropped:true}});return;
+    }
+    if(task.type==='details'){
+      const sources=datasets.get(task.key),items=task.handles.map(handle=>{
+        const source=sources?.get(handle.land);if(!source)throw new Error('Данные выбранного ДТП уже освобождены');
+        return describeId(source.columns,source.table.numRows,handle.id);
+      });self.postMessage({id,result:items});return;
+    }
+    if(task.type==='nearby'){
+      const sources=datasets.get(task.key),parts=task.lands.map(land=>{
+        const source=sources?.get(land);if(!source)throw new Error('Данные окрестности уже освобождены');
+        return scanNearby(source.columns,source.table.numRows,task);
+      });self.postMessage({id,result:parts});return;
     }
     if(task.type==='query'){
       const sources=datasets.get(task.key),parts=task.lands.map(land=>{

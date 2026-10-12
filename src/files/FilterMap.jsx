@@ -3,6 +3,8 @@ import DeckGL from '@deck.gl/react';
 import {ScatterplotLayer} from '@deck.gl/layers';
 import {DataFilterExtension} from '@deck.gl/extensions';
 import {Map as MapView} from '@vis.gl/react-maplibre';
+import RecordCard from './RecordCard.jsx';
+import {PICK_LIMIT} from './record-details.js';
 import {emptyFilters,fields,participantNames,periods,seasons,mergeQueryParts,validateMapFilters} from './map-query.js';
 const nf=new Intl.NumberFormat('ru-RU'),extension=new DataFilterExtension({filterSize:1});
 const origin='http://127.0.0.1:5188';
@@ -14,13 +16,14 @@ export default function FilterMap({loader,view,options,land,names,years,request,
     if(group in participantNames)f[group]=1;return f;
   });
   const [result,setResult]=useState(()=>({...mergeQueryParts([]),source:[],updating:true,error:'',ms:0}));
+  const deck=useRef(null),[selection,setSelection]=useState(null),[selectionNotice,setSelectionNotice]=useState('');
   const [open,setOpen]=useState(null),menu=useRef(null),scheduler=useRef({version:0,running:false,latest:null,alive:true});
   useEffect(()=>{const s=scheduler.current;s.alive=true;return()=>{s.alive=false;s.version++;};},[]);
   useEffect(()=>{
-    const close=e=>{if(e.type==='keydown'&&e.key==='Escape'||e.type==='pointerdown'&&menu.current&&!menu.current.contains(e.target))setOpen(null);};
+    const close=e=>{if(e.type==='keydown'&&e.key==='Escape'){if(open)setOpen(null);else{setSelection(null);setSelectionNotice('');}}else if(e.type==='pointerdown'&&menu.current&&!menu.current.contains(e.target))setOpen(null);};
     document.addEventListener('pointerdown',close);document.addEventListener('keydown',close);
     return()=>{document.removeEventListener('pointerdown',close);document.removeEventListener('keydown',close);};
-  },[]);
+  },[open]);
   useEffect(()=>{
     const receive=e=>{if(e.origin!==origin||e.source!==window.parent||e.data?.type!=='uad-selection')return;
       if(names[e.data.land])setLand(e.data.land);
@@ -50,9 +53,39 @@ export default function FilterMap({loader,view,options,land,names,years,request,
     pump();
   },[view.parts,land,filters,options.year,options.format,loader]);
   const masks=useMemo(()=>new Map(result.parts.map(p=>[p.land,p.mask])),[result.parts]);
-  const layers=useMemo(()=>result.source.map(p=>new ScatterplotLayer({id:'filtered-land-'+p.land,
+  useEffect(()=>{
+    if(!selection)return;const h=selection.handle;
+    if(h.year!==options.year||land&&h.land!==land){setSelection(null);setSelectionNotice('Выбор ДТП снят: изменён год или территория.');return;}
+    if(result.updating||view.state!=='ready')return;
+    const part=result.source.find(p=>p.land===h.land);
+    if(!part||part.ids[h.index]!==h.id||!masks.get(h.land)?.[h.index]){setSelection(null);setSelectionNotice('Выбранное ДТП скрыто текущими фильтрами.');}
+  },[selection,options.year,land,result.updating,result.source,masks,view.state]);
+  const lands=useMemo(()=>result.source.map(p=>p.land),[result.source]);
+  function choose(handle,choices=[handle],truncated=false){
+    const part=result.source.find(p=>p.land===handle.land);
+    if(!part||part.ids[handle.index]!==handle.id||!masks.get(handle.land)?.[handle.index])return;
+    setSelection({handle:{...handle,year:options.year},choices,truncated});setSelectionNotice('');setOpen(null);
+  }
+  function pick(info,event){
+    if(result.updating||!result.source.length||!Number.isFinite(info.x)||!Number.isFinite(info.y))return;
+    const radius=event?.pointerType==='touch'||event?.srcEvent?.pointerType==='touch'||window.matchMedia('(pointer: coarse)').matches?10:6;
+    const hits=deck.current.pickMultipleObjects({x:info.x,y:info.y,radius,depth:PICK_LIMIT+1});
+    const handles=hits.map(hit=>{
+      const part=result.source.find(p=>'filtered-land-'+p.land===hit.layer?.id);
+      return part&&hit.index>=0?{land:part.land,id:part.ids[hit.index],index:hit.index,year:options.year}:null;
+    }).filter(h=>h&&masks.get(h.land)?.[h.index]);
+    const distinct=[...new Map(handles.map(h=>[h.id,h])).values()];
+    if(!distinct.length){setSelection(null);setSelectionNotice('');return;}
+    const choices=distinct.slice(0,PICK_LIMIT);choose(choices[0],choices,distinct.length>PICK_LIMIT);
+  }
+  const layers=useMemo(()=>{
+    const points=result.source.map(p=>new ScatterplotLayer({id:'filtered-land-'+p.land,
     data:{length:p.ids.length,attributes:{getPosition:{value:p.positions,size:2},getFilterValue:{value:masks.get(p.land),size:1}}},
-    extensions:[extension],filterRange:[1,1],radiusUnits:'pixels',getRadius:1.2,getFillColor:[22,115,164,190],pickable:false})),[result.source,masks]);
+    extensions:[extension],filterRange:[1,1],radiusUnits:'pixels',getRadius:1.2,getFillColor:[22,115,164,190],pickable:!result.updating}));
+    const h=selection?.handle,part=h&&result.source.find(p=>p.land===h.land);
+    if(part&&h.year===options.year&&masks.get(h.land)?.[h.index])points.push(new ScatterplotLayer({id:'selected-ring',data:[{position:[part.positions[h.index*2],part.positions[h.index*2+1]]}],getPosition:d=>d.position,radiusUnits:'pixels',getRadius:8,filled:false,stroked:true,getLineColor:[214,94,40,255],getLineWidth:2,lineWidthUnits:'pixels',lineWidthMinPixels:2,pickable:false}));
+    return points;
+  },[result.source,result.updating,masks,selection,options.year]);
   const complete=view.state==='ready'&&!result.updating&&!result.error;
   const countOption=(key,option)=>option.hours?option.hours.reduce((n,h)=>n+(result.facets[key]?.[h]||0),0):result.facets[key]?.[option.value]||0;
   const selected=(key,o)=>o.hours?o.hours.every(h=>filters[key].includes(h)):filters[key].includes(o.value);
@@ -79,7 +112,7 @@ export default function FilterMap({loader,view,options,land,names,years,request,
         {key==='hour'&&<p className="filter-note">Границы включают полный последний час. {periods.length} периода покрывают все сутки.</p>}
       </section>}
     </div>)}
-    <button onClick={()=>{setFilters(emptyFilters());setOpen(null);}}>Сбросить все фильтры</button>
+    <button onClick={()=>{setFilters(emptyFilters());setOpen(null);setSelectionNotice('');}}>Сбросить все фильтры</button>
     <label>Кеш данных <select aria-label="Кеш данных" value={options.budget} onChange={e=>request({...options,budget:Number(e.target.value)})}><option value="100">100 МиБ</option><option value="32">32 МиБ</option></select></label>
   </section>
   <div className="filtered-status" role="status"><strong>{nf.format(result.count)} ДТП</strong> · {names[land]} · {options.year}
@@ -87,9 +120,12 @@ export default function FilterMap({loader,view,options,land,names,years,request,
     <small>Кеш: {(view.cache.bytes/1048576).toFixed(2)} / {options.budget} МиБ{view.fromCache?' · Год из памяти':''} · Пересчёт: {result.ms.toFixed(0)} мс</small>
   </div>
   {(result.error||view.error)&&<p role="alert">{result.error||view.error}<button onClick={()=>request({...options})}>Повторить загрузку</button></p>}
-  <div className="filtered-canvas"><DeckGL initialViewState={{longitude:10.4,latitude:51.1,zoom:5}} controller layers={layers}>
+  {selectionNotice&&<p className="filter-note" role="status">{selectionNotice}</p>}
+  <div className={selection?'record-workspace with-card':'record-workspace'}><div className="filtered-canvas"><DeckGL ref={deck} onClick={pick} pickingRadius={6} initialViewState={{longitude:10.4,latitude:51.1,zoom:5}} controller layers={layers}>
     <MapView mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json" attributionControl /></DeckGL></div>
+    {selection&&<RecordCard key={selection.handle.year+':'+selection.handle.id} loader={loader} handle={selection.handle} choices={selection.choices} truncated={selection.truncated} names={names} format={options.format} filters={filters} lands={lands} ready={complete} onSelect={choose} onClose={()=>{setSelection(null);setSelectionNotice('');}}/>}
+  </div>
   {!result.updating&&!loading&&!result.count&&!result.error&&<p className="filter-empty">Нет ДТП по выбранным условиям. Измените условия или сбросьте фильтры.</p>}
-  <p className="filter-note">Одна точка — одно ДТП. Карточка ДТП пока не подключена. Выбранный год загружается по всем землям, отбор земли использует уже загруженные данные.</p>
+  <p className="filter-note">Одна точка — одно ДТП. Нажмите на точку, чтобы открыть карточку ДТП. Выбранный год загружается по всем землям, отбор земли использует уже загруженные данные.</p>
   </main>;
 }

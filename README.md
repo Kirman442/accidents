@@ -70,3 +70,8 @@ The third standalone prototype is `prototypes/severity-mockup.html`: outcome cat
 ## Шаг 06 — Map filters and cache · 2026-10-12
 
 База 5e9679b. Реальные фильтры, фасетные счётчики, маски workers и GPU-отбор. Смена земли без повторной загрузки, годы из LRU 100/32 МиБ; актуальный год из каталога. 36 тестов, сборка, ESLint и CSV/браузерные сверки прошли. Правила: docs/map-filters.md. Проверки и ограничения: README_06_step_Map_filters_and_cache.md. Локальный архив: UAD_data/06_step_Map_filters_and_cache.zip.
+
+
+## Шаг 07 — Accident card · 2026-10-12
+
+База 21b5a91. Лёгкая карточка, выбор/кольцо, SVG-участники, время/последствия/сценарии/условия. Окрестность 50 м по запросу без индекса, текущие фильтры, ограниченная выдача. 42 теста, сборка, ESLint, реальные CSV/Arrow и браузерные проверки прошли. Адреса/названия населённых пунктов пока не подключены; похожие ДТП в районе отложены. Подробности: docs/record-card.md и README_07_step_Accident_card.md. Архив: UAD_data/07_step_Accident_card.zip.
