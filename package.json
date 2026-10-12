@@ -20,7 +20,7 @@
     "prebuild": "node scripts/prepare-shell-prototypes.mjs",
     "predev": "node scripts/prepare-shell-prototypes.mjs",
     "prebuild:netlify": "node scripts/prepare-shell-prototypes.mjs",
-    "build:netlify": "node scripts/build-netlify.mjs"
+    "build:netlify": "node --use-system-ca scripts/build-netlify.mjs"
   },
   "dependencies": {
     "@loaders.gl/core": "^4.3.3",
