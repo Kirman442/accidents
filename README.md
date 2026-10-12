@@ -117,3 +117,7 @@ The third standalone prototype is `prototypes/severity-mockup.html`: outcome cat
 ## Шаг 09 — Native overview · 2026-10-12
 
 База `319bc80`. Согласованный обзор перенесён из iframe в React: ограниченная ширина, 45/55, участники → последствия слева, земли справа, независимые показатели, графики/таблицы и методика. Контекст и данные принадлежат AppShell; существующий 26 КБ overview-бандл валидируется по generation, без загрузки полных точек. 56 тестов, ESLint, build и реальные browser-сценарии/mobile/history/card/cache прошли. Подробности: `README_09_step_Native_overview.md`. Снимок: `UAD_data/09_step_Native_overview.zip`. Время/тяжесть остаются iframe; шаги 10/11 отдельно. Push/deploy не выполнялись, Netlify пока версия после шага08 с кнопками темы.
+
+## Подготовка UI/UX времени после шага09 · 2026-10-12
+
+База `79ff7eb`. Отдельный mockup `prototypes/time-layout-lab.html` с CSS/controls: три порядка, ширина1190/1440, перестановка, четыре периода/24часа/столбцы дней, месяцы по годам с числами/таблицей, числовые шкалы и календарные детали. Общие filters territory/years/group; локальные day/hour и season/year-view не имитируют отсутствующий joint month×weekday×hour. Исходные агрегаты сохранены. Проверены календарь/суммы, browser filters/reorder/mobile; console errors нет. Документация `README_09_time_layout_lab.md`, архив `UAD_data/09_step_Time_layout_lab.zip`. Приложение/Netlify не менялись; React-шаг10 не начат.
