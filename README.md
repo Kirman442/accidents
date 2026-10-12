@@ -85,3 +85,8 @@ The third standalone prototype is `prototypes/severity-mockup.html`: outcome cat
 ## Передача проекта после шага 08 · 2026-10-12
 
 Подробный актуальный отчёт: docs/HANDOFF_2026-10-12_after_step08.md. Сверены remote refs, живой GitHub Pages, новая Supabase-схема/16 таблиц, внешние данные и архивы. Supabase-версия уже опубликована; файловая ветка со шагами 01–08 пока локальная. Нового функционального шага или публикации в рамках отчёта не выполнялось.
+
+
+## Netlify preview после шага08 · 2026-10-12
+
+Отдельная release-ветка codex/uad-netlify-step08. Подготовлены publication adapter, выбранные Arrow/Parquet всех лет, generation URL, Edge encoding и reproducible data source. Подробности/актуальный статус: README_08_release_Netlify_preview.md. Прежний Supabase-сайт сохраняется; шаг09 native-analytics ещё не выполнялся.

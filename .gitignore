@@ -26,3 +26,7 @@ logs/
 # Generated analytic prototype adapters, rebuilt from tracked source
 /public/prototypes/
 /public/prototype-bridge.js
+
+# Local publication artifacts and generated Edge asset registry
+/.netlify/
+/netlify/data-index.js

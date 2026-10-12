@@ -9,7 +9,7 @@ import {blankStats,combineStats,fleetRate,verifySummary} from './analytics.js';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './benchmark.css';
 
-const base=import.meta.env.BASE_URL+'__binary/';
+const base=(import.meta.env.VITE_FILE_DATA_BASE_URL||import.meta.env.BASE_URL+'__binary/').replace(/\/?$/,'/');
 const names=['','Schleswig-Holstein','Hamburg','Niedersachsen','Bremen','Nordrhein-Westfalen','Hessen','Rheinland-Pfalz','Baden-Württemberg','Bayern','Saarland','Berlin','Brandenburg','Mecklenburg-Vorpommern','Sachsen','Sachsen-Anhalt','Thüringen'];
 const scenarios=[{label:'Германия',filters:{}},{label:'NRW',filters:{uland:5}},
   {label:'NRW + категория 3 + Pkw, без Rad/Fuß',filters:{uland:5,category:3,pkw:1,rad:0,fuss:0}},

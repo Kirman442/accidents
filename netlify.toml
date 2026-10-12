@@ -1,0 +1,35 @@
+[build]
+  command = "npm run build:netlify"
+  publish = ".netlify/publish"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[edge_functions]]
+  function = "data-encoding"
+  path = "/accidents/__binary/*"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/accidents/*.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/accidents/prototypes/*.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/accidents/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/accidents/assets/*.wasm"
+  [headers.values]
+    Content-Type = "application/wasm"

@@ -18,7 +18,9 @@
     "fullreset": "npm run hardclean && npm install",
     "test": "node --test tests/*.test.mjs",
     "prebuild": "node scripts/prepare-shell-prototypes.mjs",
-    "predev": "node scripts/prepare-shell-prototypes.mjs"
+    "predev": "node scripts/prepare-shell-prototypes.mjs",
+    "prebuild:netlify": "node scripts/prepare-shell-prototypes.mjs",
+    "build:netlify": "node scripts/build-netlify.mjs"
   },
   "dependencies": {
     "@loaders.gl/core": "^4.3.3",
