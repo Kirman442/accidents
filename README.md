@@ -101,3 +101,7 @@ The third standalone prototype is `prototypes/severity-mockup.html`: outcome cat
 ## Дополнение после шага 08 — кнопки темы карты · 2026-10-12
 
 База `00216d0`. По образцу charging-points выпадающий список заменён луной и солнцем в общем блоке с выделением активной темы. Проверки: 53 Node-теста, ESLint, local/Netlify builds и реальные переключения подложки в браузере; count и кеш сохраняются, console errors нет. Подробности: `README_08_map_theme_buttons.md`. Архив: `UAD_data/08_step_Map_theme_buttons.zip`. Шаг 09 не начат.
+
+## Подготовка UI/UX обзора после шага 08 · 2026-10-12
+
+База `4c4d684`. Отдельный `prototypes/overview-layout-lab.html`: три варианта размещения, ограниченная ширина, перетаскивание/кнопки порядка, линия/столбцы/таблицы, исходные реальные сводки. URL: http://127.0.0.1:5189/overview-layout-lab.html?region=5&year=2025. Браузерные проверки данных, вариантов, reorder, mobile и console прошли. Подробности: `README_08_overview_layout_lab.md`; снимок: `UAD_data/08_step_Overview_layout_lab.zip`. Приложение и Netlify не менялись; шаг 09 React-port не выполнен.
