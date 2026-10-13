@@ -103,7 +103,6 @@ export default function FilterMap({loader,view,options,land,names,years,request,
       <button className={open===key?'filter-toggle active':'filter-toggle'} aria-expanded={open===key} onClick={()=>setOpen(open===key?null:key)}>{key==='participants'?'Участники':fields[key].label}: {summary(key)}</button>
       {open===key&&<section className="filter-menu" aria-label={key==='participants'?'Выбор участников':fields[key].label}>
         <button onClick={()=>setFilters(f=>({...f,...(key==='participants'?Object.fromEntries(Object.keys(participantNames).map(k=>[k,null])):{[key]:[]})}))}>Все / сбросить</button>
-        {!complete&&<p className="filter-note">Счётчики {loading?'по загруженным землям':'обновляются'}; нулевые варианты пока доступны.</p>}
         {key==='participants'?Object.entries(participantNames).map(([k,name])=><label key={k}>{name}<select aria-label={name} value={filters[k]==null?'all':filters[k]} onChange={e=>setFilters(f=>({...f,[k]:e.target.value==='all'?null:Number(e.target.value)}))}>
           <option value="all">Все · {nf.format((result.facets[k]?.[0]||0)+(result.facets[k]?.[1]||0))}</option>
           {[1,0].map(v=><option key={v} value={v} disabled={complete&&!result.facets[k]?.[v]&&filters[k]!==v}>{v?'С участием':'Без участия'} · {nf.format(result.facets[k]?.[v]||0)}</option>)}</select></label>):<>

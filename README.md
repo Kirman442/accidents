@@ -151,3 +151,7 @@ The third standalone prototype is `prototypes/severity-mockup.html`: outcome cat
 ## Публикация шагов09–11 · 2026-10-13
 
 По прямому разрешению пользователя все накопленные коммиты запушены в codex/uad-netlify-step08 и опубликованы на существующем kirman442-uad-step08.netlify.app. Release code6db7683, deploy6ace008c94632ca6679e2e2e. 64 теста/build и208HTTP/hash проверок, включая195payloads/70151851байт иBrotli headers, прошли. Live native overview/time/severity/map проверены. README_11_release_Netlify_steps09_11.md; архив UAD_data/11_step_Netlify_release_steps09_11.zip. Нет Supabase/БД/merge изменений, автодеплой поpush не подключён. Следующий этап — общий UI/UX.
+
+## Подготовка карты: сетка часов · 2026-10-13
+
+Базаb7bf015. Согласован отдельный map-hours-lab.html:6×4часа, тумблеры рядов00–05/06–11/12–17/18–23, произвольные отдельные часы и последовательные диапазоны протягиванием, partial/full/off, подтверждение после отпускания и точные подписи. Два теста и browser drag/cross-row/remove/keyboard/390px прошли. README_12_map_hours_lab.md, архив UAD_data/12_step_Map_hours_lab.zip. В основной карте контрол ещё не заменён. Отдельно удалена согласованная сдвигающая надпись обновления счётчиков из всех dropdown; локальная сборка5187 обновлена. Netlify/push не выполнялись; общий UI/UX отложен.
