@@ -155,3 +155,7 @@ The third standalone prototype is `prototypes/severity-mockup.html`: outcome cat
 ## Подготовка карты: сетка часов · 2026-10-13
 
 Базаb7bf015. Согласован отдельный map-hours-lab.html:6×4часа, тумблеры рядов00–05/06–11/12–17/18–23, произвольные отдельные часы и последовательные диапазоны протягиванием, partial/full/off, подтверждение после отпускания и точные подписи. Два теста и browser drag/cross-row/remove/keyboard/390px прошли. README_12_map_hours_lab.md, архив UAD_data/12_step_Map_hours_lab.zip. В основной карте контрол ещё не заменён. Отдельно удалена согласованная сдвигающая надпись обновления счётчиков из всех dropdown; локальная сборка5187 обновлена. Netlify/push не выполнялись; общий UI/UX отложен.
+
+## Шаг12 — Фильтры карты и карточка · 2026-10-13
+
+Базаb2f1f41. По согласованию реализованы scenario filters, React-сетка часов6×4 (default24/empty0), единые периоды, полная ссылкаv2 с восстановлением и миграцией storage, отдельная карточка≈70/30, два режима50м, открытие соседа вне отбора и возврат к исходному ДТП. Общий UI/UX и OR-участники отложены. 68 тестов, ESLint/build и browser count/link/drag/card/nearby/mobile прошли. README_12_step_Map_filters_and_card.md; архив UAD_data/12_step_Map_filters_and_card.zip. Пользователь разрешил следующий push/deploy на существующий Netlify; запись результата публикации отдельно.

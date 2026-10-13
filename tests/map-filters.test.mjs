@@ -5,14 +5,14 @@ import {queryColumns,mergeQueryParts,emptyFilters,fields,periods,seasons,validat
 import {catalogYears,validateCatalog} from '../src/files/catalog.js';
 import {participants} from '../src/benchmark/analytics.js';
 const rows=Array.from({length:400},(_,i)=>({month:i%12+1,hour:i%24,weekday:i%7+1,category:i%3+1,
- light:Math.floor(i/3)%3,road_condition:Math.floor(i/7)%3,
+ light:Math.floor(i/3)%3,road_condition:Math.floor(i/7)%3,accident_pattern:i%7+1,accident_type:i%10,
  ...Object.fromEntries(participants.map((k,j)=>[k,(i>>j)%2]))}));
 const table=tableFromArrays(Object.fromEntries(Object.keys(rows[0]).map(k=>[k,new Uint8Array(rows.map(r=>r[k]))])));
 const columns=Object.fromEntries(Object.keys(rows[0]).map(k=>[k,table.getChild(k)]));
-function match(r,f,except){return Object.entries(f).every(([k,v])=>k===except||(Array.isArray(v)?!v.length||v.includes(r[k]):v==null||v===r[k]));}
+function match(r,f,except){return Object.entries(f).every(([k,v])=>k===except||(Array.isArray(v)?k==='hour'?v.includes(r[k]):!v.length||v.includes(r[k]):v==null||v===r[k]));}
 test('Worker mask and self-excluding facets reconcile with independent brute-force queries',()=>{
  for(let i=0;i<60;i++){
-  const f={...emptyFilters(),month:i%2?[1,2,12]:[],weekday:i%3?[1,7]:[],hour:i%4?periods[i%4].hours:[],category:i%5?[1,3]:[],pkw:i%3===0?null:i%2,rad:i%4===0?1:null};
+  const f={...emptyFilters(),month:i%2?[1,2,12]:[],weekday:i%3?[1,7]:[],hour:i%4?periods[i%4].hours:[],category:i%5?[1,3]:[],accident_pattern:i%2?[1,2]:[],accident_type:i%3?[0,3,6]:[],pkw:i%3===0?null:i%2,rad:i%4===0?1:null};
   const q=queryColumns(columns,rows.length,f),expected=rows.map(r=>Number(match(r,f)));
   assert.deepEqual([...q.mask],expected);assert.equal(q.count,expected.reduce((n,v)=>n+v,0));
   for(const k of Object.keys(q.facets))for(let v=0;v<q.facets[k].length;v++)

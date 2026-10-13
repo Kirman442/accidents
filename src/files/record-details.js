@@ -28,7 +28,7 @@ export function scanNearby(columns,rows,{origin,filters,take=NEAR_PAGE,radius=NE
   if(!origin||!Number.isSafeInteger(origin.id)||!Number.isFinite(origin.longitude)||!Number.isFinite(origin.latitude)||Math.abs(origin.longitude)>180||Math.abs(origin.latitude)>90||!Number.isInteger(take)||take<1||take>NEAR_LIMIT||radius!==NEAR_RADIUS)throw new Error('Некорректный запрос окрестности');
   const angular=radius/R,dy=angular/rad,cos=Math.cos(origin.latitude*rad);
   const dx=cos>Math.sin(angular)?Math.asin(Math.sin(angular)/cos)/rad:180;
-  const predicates=Object.entries(filters).filter(([,v])=>Array.isArray(v)?v.length:v!=null);
+  const predicates=Object.entries(filters).filter(([k,v])=>Array.isArray(v)?k==='hour'||v.length:v!=null);
   let count=0;const kept=[];
   for(let i=0;i<rows;i++){
     const id=columns.record_id.get(i);if(id===origin.id)continue;

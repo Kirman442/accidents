@@ -26,6 +26,7 @@ export default function AppShell(){
   const [overview,setOverview]=useState(null),[overviewError,setOverviewError]=useState(''),[overviewAttempt,setOverviewAttempt]=useState(0),[generation,setGeneration]=useState(null);
   const [timeData,setTimeData]=useState(null),[timeError,setTimeError]=useState(''),[timeAttempt,setTimeAttempt]=useState(0);
   const [severityData,setSeverityData]=useState(null),[severityError,setSeverityError]=useState(''),[severityAttempt,setSeverityAttempt]=useState(0);
+  const [mapRouteFilters,setMapRouteFilters]=useState(()=>({value:new URLSearchParams(location.search).get('mf'),nonce:0}));
   const [view,setView]=useState({state:'idle',parts:[],loaded:0,cache:{entries:[],bytes:0,limitBytes:options.budget*1048576}});
   refs.current={screen,contexts,years,options,land,visited};
   useEffect(()=>{
@@ -110,7 +111,7 @@ export default function AppShell(){
   },[]);
   useEffect(()=>{
     const back=()=>{const state=refs.current;if(!state.contexts)return;scrolls.current[state.screen]=window.scrollY;const params=new URLSearchParams(location.search),target=screenKey(params.get('screen')),context=contextFor(target,Object.fromEntries(params),state.years);
-      setContexts(c=>({...c,[target]:context}));if(target==='map'){setLand(context.region);setOptions(o=>({...o,year:context.year}));}
+      setContexts(c=>({...c,[target]:context}));if(target==='map'){setLand(context.region);setOptions(o=>({...o,year:context.year}));setMapRouteFilters(previous=>({value:params.get('mf'),nonce:previous.nonce+1}));}
       remembered.current.add(target);setVisited(v=>({...v,[target]:true}));setScreen(target);};
     window.addEventListener('popstate',back);return()=>window.removeEventListener('popstate',back);
   },[]);
@@ -135,7 +136,7 @@ export default function AppShell(){
     {error&&<p role="alert">{error}{!contexts&&<button onClick={()=>location.reload()}>Повторить</button>}</p>}
     {contexts&&<>
       {screen==='map'&&notice&&<p className="shell-note">{notice}</p>}
-      {visited.map&&<section hidden={screen!=='map'} aria-label="Экран карты"><Suspense fallback={<p>Готовим карту…</p>}><NativeMap loader={loader} view={view} options={options} land={land} names={names} years={years} request={request} setLand={setLand} active={screen==='map'} selectionControls={false} filterIntent={intent} mapStyle={mapStyles[mapTheme]}/></Suspense></section>}
+      {visited.map&&<section hidden={screen!=='map'} aria-label="Экран карты"><Suspense fallback={<p>Готовим карту…</p>}><NativeMap loader={loader} view={view} options={options} land={land} names={names} years={years} request={request} setLand={setLand} active={screen==='map'} selectionControls={false} filterIntent={intent} routeFilters={mapRouteFilters} mapStyle={mapStyles[mapTheme]}/></Suspense></section>}
       {visited.overview&&<section hidden={screen!=='overview'} aria-label="Экран обзора"><NativeOverview data={overview} error={overviewError} onRetry={()=>setOverviewAttempt(n=>n+1)} context={contexts.overview} names={names} onRegion={region=>setContexts(c=>({...c,overview:changeContext('overview',c.overview,'region',region,years)}))} active={screen==='overview'}/></section>}
       {visited.time&&<section hidden={screen!=='time'} aria-label="Экран времени"><NativeTime data={timeData} error={timeError} onRetry={()=>setTimeAttempt(n=>n+1)} context={contexts.time} names={names}/></section>}
       {visited.severity&&<section hidden={screen!=='severity'} aria-label="Экран тяжести"><NativeSeverity data={severityData} error={severityError} onRetry={()=>setSeverityAttempt(n=>n+1)} context={contexts.severity} names={names} active={screen==='severity'}/></section>}
