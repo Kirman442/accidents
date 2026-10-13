@@ -3,7 +3,8 @@ import RuntimeWorker from '../files/runtime.worker.js?worker';
 import {RuntimePool} from '../files/pool.js';
 import {FileLoader} from '../files/loader.js';
 import {catalogYears,validateCatalog} from '../files/catalog.js';
-import AnalyticFrame from './AnalyticFrame.jsx';
+import NativeSeverity from './NativeSeverity.jsx';
+import {validateSeverity} from './severity-model.js';
 import NativeOverview from './NativeOverview.jsx';
 import NativeTime from './NativeTime.jsx';
 import {validateTime} from './time-model.js';
@@ -24,6 +25,7 @@ export default function AppShell(){
   const [visited,setVisited]=useState({}),[error,setError]=useState(''),[intent,setIntent]=useState(null),[notice,setNotice]=useState('');
   const [overview,setOverview]=useState(null),[overviewError,setOverviewError]=useState(''),[overviewAttempt,setOverviewAttempt]=useState(0),[generation,setGeneration]=useState(null);
   const [timeData,setTimeData]=useState(null),[timeError,setTimeError]=useState(''),[timeAttempt,setTimeAttempt]=useState(0);
+  const [severityData,setSeverityData]=useState(null),[severityError,setSeverityError]=useState(''),[severityAttempt,setSeverityAttempt]=useState(0);
   const [view,setView]=useState({state:'idle',parts:[],loaded:0,cache:{entries:[],bytes:0,limitBytes:options.budget*1048576}});
   refs.current={screen,contexts,years,options,land,visited};
   useEffect(()=>{
@@ -57,6 +59,15 @@ export default function AppShell(){
       .catch(e=>{if(!controller.signal.aborted)setTimeError(e.message);});
     return()=>controller.abort();
   },[visited.time,generation,timeAttempt]);
+  useEffect(()=>{
+    if(!visited.severity||!generation)return;
+    const controller=new AbortController();setSeverityError('');
+    fetch(import.meta.env.BASE_URL+'analytics/severity.json',{signal:controller.signal,cache:'no-store'})
+      .then(r=>{if(!r.ok)throw new Error('Сводки тяжести недоступны: HTTP '+r.status);return r.json();})
+      .then(data=>{if(!controller.signal.aborted)setSeverityData(validateSeverity(data,generation));})
+      .catch(e=>{if(!controller.signal.aborted)setSeverityError(e.message);});
+    return()=>controller.abort();
+  },[visited.severity,generation,severityAttempt]);
   const request=useCallback(next=>{
     if(!models.current)return;
     const key=next.year+':'+next.format+':'+next.budget;job.current=key;
@@ -104,12 +115,6 @@ export default function AppShell(){
     window.addEventListener('popstate',back);return()=>window.removeEventListener('popstate',back);
   },[]);
   useEffect(()=>{const id=requestAnimationFrame(()=>window.scrollTo(0,scrolls.current[screen]||0));return()=>cancelAnimationFrame(id);},[screen]);
-  const prototypeMessage=useCallback((source,message)=>{
-    const state=refs.current;if(!state.contexts||source!=='severity')return;
-    if(message.type==='uad-prototype-navigate'){navigate(message.target,message.context);return;}
-    const context=contextFor(source,message.context,state.years);
-    setContexts(c=>contextEqual(c[source],context)?c:{...c,[source]:context});
-  },[navigate]);
   function change(field,value){
     if(screen==='map'){if(field==='region')setLand(Number(value));else request({...options,year:Number(value)});}
     else setContexts(c=>({...c,[screen]:changeContext(screen,c[screen],field,value,years)}));
@@ -129,12 +134,11 @@ export default function AppShell(){
     <p className="shell-cache" role="status">{loader.current?(view.state==='loading'?`Карта загружается: ${view.loaded}/16 земель · `:'')+'В памяти: '+(view.cache.entries.map(e=>e.year).join(', ')||'готовых годов пока нет')+' · '+(view.cache.bytes/1048576).toFixed(2)+' / '+options.budget+' МиБ':'Полные данные карты ещё не загружались.'}</p>
     {error&&<p role="alert">{error}{!contexts&&<button onClick={()=>location.reload()}>Повторить</button>}</p>}
     {contexts&&<>
-      {screen==='severity'&&<p className="shell-note">Пока это сохранённый макет аналитики. Отбор здесь: территория, период и одна группа участников. Остальные фильтры карты остаются только на карте.</p>}
       {screen==='map'&&notice&&<p className="shell-note">{notice}</p>}
       {visited.map&&<section hidden={screen!=='map'} aria-label="Экран карты"><Suspense fallback={<p>Готовим карту…</p>}><NativeMap loader={loader} view={view} options={options} land={land} names={names} years={years} request={request} setLand={setLand} active={screen==='map'} selectionControls={false} filterIntent={intent} mapStyle={mapStyles[mapTheme]}/></Suspense></section>}
       {visited.overview&&<section hidden={screen!=='overview'} aria-label="Экран обзора"><NativeOverview data={overview} error={overviewError} onRetry={()=>setOverviewAttempt(n=>n+1)} context={contexts.overview} names={names} onRegion={region=>setContexts(c=>({...c,overview:changeContext('overview',c.overview,'region',region,years)}))} active={screen==='overview'}/></section>}
       {visited.time&&<section hidden={screen!=='time'} aria-label="Экран времени"><NativeTime data={timeData} error={timeError} onRetry={()=>setTimeAttempt(n=>n+1)} context={contexts.time} names={names}/></section>}
-      {visited.severity&&<AnalyticFrame screen="severity" title={screens.severity} context={contexts.severity} active={screen==='severity'} onMessage={prototypeMessage}/>}
+      {visited.severity&&<section hidden={screen!=='severity'} aria-label="Экран тяжести"><NativeSeverity data={severityData} error={severityError} onRetry={()=>setSeverityAttempt(n=>n+1)} context={contexts.severity} names={names} active={screen==='severity'}/></section>}
     </>}
   </div></div>;
 }

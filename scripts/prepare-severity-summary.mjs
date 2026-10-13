@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const html=fs.readFileSync(path.join(root,'prototypes/severity-mockup.html'),'utf8');
+const match=html.match(/const data=(\{.*\});\r?\nconst names=/s);
+if(!match)throw new Error('Severity prototype data not found');
+const data=JSON.parse(match[1]),overview=JSON.parse(fs.readFileSync(path.join(root,'public/analytics/overview.json'),'utf8'));
+const output={schema_version:1,generation:overview.generation,source:'Unfallatlas 2020–2025',...data};
+fs.writeFileSync(path.join(root,'public/analytics/severity.json'),JSON.stringify(output)+'\n');
+console.log('Exported unchanged prototype severity aggregates with catalog generation');

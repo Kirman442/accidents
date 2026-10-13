@@ -143,3 +143,7 @@ The third standalone prototype is `prototypes/severity-mockup.html`: outcome cat
 ## Макет тяжести и условий после шага10 · 2026-10-13
 
 База956eb63. По согласованию отдельный severity-layout-lab.html: понятные подписи долей/оснований, числа возле долей условий, явная область переключателя, выбранные годы фоном, сочетания матрица/точки с подробностями. Существующая структура и данные сохранены, max-width1190; общий UI/UX отложен. Browser Germany/Hamburg/Pkw, девять сочетаний, scope переключателей, 1280/390px и console errors0 проверены. README_10_severity_layout_lab.md, архив UAD_data/10_step_Severity_layout_lab.zip. App/Netlify не менялись; React-шаг11 после просмотра макета.
+
+## Шаг11 — Native severity and conditions · 2026-10-13
+
+База4f68206. Согласованный макет тяжести/условий перенесён в React: четыре карточки, динамика, отдельные условия, сочетания матрица/точки, таблица и методика. Контекст и проверенный severity.json90864байт принадлежат AppShell;714срезов сверены с overview, joint categories и земли проверены. Последний аналитический iframe убран: все аналитические разделы нативные. 64 теста, ESLint, build, browser filters/dialogs/persistence/map/history/390px прошли. README_11_step_Native_severity_and_conditions.md, архив UAD_data/11_step_Native_severity_and_conditions.zip. Общий UI/UX далее отдельно, Netlify не обновлялся.
