@@ -87,3 +87,7 @@ Netlify preview **опубликован**: https://kirman442-uad-step08.netlify
 ## Шаг11 — Native severity and conditions · 2026-10-13
 
 База4f68206. Согласованный макет тяжести/условий перенесён в React: четыре карточки, динамика, отдельные условия, сочетания матрица/точки, таблица и методика. Контекст и проверенный severity.json90864байт принадлежат AppShell;714срезов сверены с overview, joint categories и земли проверены. Последний аналитический iframe убран: все аналитические разделы нативные. 64 теста, ESLint, build, browser filters/dialogs/persistence/map/history/390px прошли. README_11_step_Native_severity_and_conditions.md, архив UAD_data/11_step_Native_severity_and_conditions.zip. Общий UI/UX далее отдельно, Netlify не обновлялся.
+
+## Публикация шагов09–11 · 2026-10-13
+
+По прямому разрешению пользователя все накопленные коммиты запушены в codex/uad-netlify-step08 и опубликованы на существующем kirman442-uad-step08.netlify.app. Release code6db7683, deploy6ace008c94632ca6679e2e2e. 64 теста/build и208HTTP/hash проверок, включая195payloads/70151851байт иBrotli headers, прошли. Live native overview/time/severity/map проверены. README_11_release_Netlify_steps09_11.md; архив UAD_data/11_step_Netlify_release_steps09_11.zip. Нет Supabase/БД/merge изменений, автодеплой поpush не подключён. Следующий этап — общий UI/UX.
