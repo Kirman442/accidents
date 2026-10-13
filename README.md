@@ -159,3 +159,7 @@ The third standalone prototype is `prototypes/severity-mockup.html`: outcome cat
 ## Шаг12 — Фильтры карты и карточка · 2026-10-13
 
 Базаb2f1f41. По согласованию реализованы scenario filters, React-сетка часов6×4 (default24/empty0), единые периоды, полная ссылкаv2 с восстановлением и миграцией storage, отдельная карточка≈70/30, два режима50м, открытие соседа вне отбора и возврат к исходному ДТП. Общий UI/UX и OR-участники отложены. 68 тестов, ESLint/build и browser count/link/drag/card/nearby/mobile прошли. README_12_step_Map_filters_and_card.md; архив UAD_data/12_step_Map_filters_and_card.zip. Пользователь разрешил следующий push/deploy на существующий Netlify; запись результата публикации отдельно.
+
+## Публикация шага12 · 2026-10-13
+
+Release code99b7362 запушен и опубликован на существующем Netlify, deploy6ace11aa905f96893846155e. 68 тестов/ESLint/build и208HTTP/hash проверок прошли; все195payloads/Brotli сохраняются. Live empty-hours link0, утроHamburg1932, reset7057, console errors0. README_12_release_Netlify.md, снимок UAD_data/12-map-netlify.jpg, архив UAD_data/12_step_Map_filters_and_card.zip. Автодеплой/БД/Supabase/main не менялись. Общий UI/UX далее отдельно.
