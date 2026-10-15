@@ -17,3 +17,14 @@ Site ID: `1c970989-a6c6-4e65-b4d8-44c476014846`.
 Проверка всех опубликованных статических файлов: `node --use-system-ca scripts/verify-netlify.mjs`; JSON-отчёт сохраняется в UAD_data, внеGit.
 
 Статус на момент подготовки code commit: сборка готова, публикация выполняется следующим шагом. Результат и deploy ID будут записаны после проверки живого сайта. Старый Supabase/GitHub Pages и main/master не меняются; автоматический деплой по push не подключается.
+
+## Опубликовано и проверено
+
+Code commit: `9354dcc` (push выполнен). Deploy ID: `6ad0a26edef6a146924ef8ce`.
+Immutable URL: https://6ad0a26edef6a146924ef8ce--kirman442-uad-step08.netlify.app/
+
+236 опубликованных файлов проверены: HTTP200 и SHA256 для всех payloads, JS/CSS/WASM, аналитики и географии. Для корневого index.html отдельно подтверждена эквивалентность единственного преобразования fallback-ссылки Netlify Pretty URLs (`/accidents/app.html` → `/accidents/app`); остальное содержимое сравнивается без послаблений. У всех.br сохранён Content-Encoding:br, неизвестный data path404. Отчёт: UAD_data/netlify-uiux-2026-10-15-http.json. Скрипт учитывает только перенаправления внутри того же origin и это конкретное преобразование корневой ссылки.
+
+Live browser: Berlin2025=13280, категории32/1628/11620; пустые часы0 и сброс13280; обе темы; ячейка73ДТП → корректное приближение в Берлине → точки → реальная карточка (май2025, четверг07:00, Pkw/пешеход, дневной свет/сухо). Console errors/warnings0. Снимок: UAD_data/netlify-uiux-map-2026-10-15.png.
+
+Документация и уточнение проверочного скрипта фиксируются отдельным коммитом после code commit. Они не меняют опубликованный runtime, повторная сборка/публикация для них не нужна. Исходный архив: UAD_data/14_step_UIUX_map_release_2026-10-15.zip, STEP_SNAPSHOT и SHA256 рядом. Рабочая ветка остаётся codex/uad-netlify-step08; merge вmaster/main, БД, старый GitHub Pages/Supabase и настройка автодеплоя не затронуты.
