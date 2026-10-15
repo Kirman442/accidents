@@ -11,6 +11,7 @@ import Overview from './Overview.jsx';
 import FilterMap from './FilterMap.jsx';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './files.css';
+import '../app/theme.css';
 const names=['Все земли','Schleswig-Holstein','Hamburg','Niedersachsen','Bremen','Nordrhein-Westfalen','Hessen','Rheinland-Pfalz','Baden-Württemberg','Bayern','Saarland','Berlin','Brandenburg','Mecklenburg-Vorpommern','Sachsen','Sachsen-Anhalt','Thüringen'];
 const base=(import.meta.env.VITE_FILE_DATA_BASE_URL || import.meta.env.BASE_URL+'__binary/').replace(/\/?$/,'/');
 const nf=new Intl.NumberFormat('ru-RU'),mib=n=>(n/1048576).toFixed(2);
@@ -57,7 +58,7 @@ export default function FilesApp(){
   const status=view.state==='ready'?(view.fromCache?'Год восстановлен из памяти, без скачивания':'Год загружен и проверен'):
     view.state==='loading'?`Загружаем ${view.year}: ${view.loaded}/16 земель`:
       view.state==='catalog'?'Читаем каталог данных…':view.state==='switching'?'Переключаем год…':view.state==='error'?'Ошибка загрузки':'Загрузка остановлена или кеш очищен';
-  if(mapOnly)return <FilterMap loader={loader} view={view} options={options} land={land} names={names} years={years} request={request} setLand={setLand}/>;
+  if(mapOnly)return <div className="map-standalone" data-theme="light"><FilterMap theme="light" loader={loader} view={view} options={options} land={land} names={names} years={years} request={request} setLand={setLand}/></div>;
   return <main className="files-app">
     <header><h1>Unfallatlas · файловая версия</h1><p>ДТП, динамика по годам и автопарк Германии. Земли на карте появляются по мере готовности.</p></header>
     <section className="file-controls">

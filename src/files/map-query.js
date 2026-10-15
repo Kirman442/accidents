@@ -28,22 +28,22 @@ export function queryColumns(columns,rows,filters){
   validateMapFilters(filters);
   const keys=[...Object.keys(fields),...participants],sets=Object.fromEntries(Object.keys(fields).map(k=>[k,new Set(filters[k]??(k==='hour'?allHours:[]))]));
   const facets=Object.fromEntries(keys.map(k=>[k,Array(domains[k][1]+1).fill(0)]));
-  const mask=new Uint8Array(rows);let count=0;
+  const mask=new Uint8Array(rows),category=[0,0,0];let count=0;
   for(let i=0;i<rows;i++){
     const values=keys.map(k=>columns[k].get(i));let failed=-1,failures=0;
     for(let j=0;j<keys.length;j++){
       const k=keys[j],v=values[j],ok=participants.includes(k)?filters[k]==null||filters[k]===v:k==='hour'?sets[k].has(v):!sets[k].size||sets[k].has(v);
       if(!ok){failed=j;if(++failures>1)break;}
     }
-    if(!failures){mask[i]=1;count++;for(let j=0;j<keys.length;j++)facets[keys[j]][values[j]]++;}
+    if(!failures){mask[i]=1;count++;category[values[keys.indexOf('category')]-1]++;for(let j=0;j<keys.length;j++)facets[keys[j]][values[j]]++;}
     else if(failures===1)facets[keys[failed]][values[failed]]++;
   }
-  return {mask,count,facets};
+  return {mask,count,facets,category};
 }
 export function mergeQueryParts(parts){
   const facets=Object.fromEntries([...Object.keys(fields),...participants].map(k=>[k,Array(domains[k][1]+1).fill(0)]));
-  let count=0;for(const part of parts){count+=part.count;for(const k of Object.keys(facets))part.facets[k].forEach((n,i)=>facets[k][i]+=n);}
-  return {parts,count,facets};
+  const category=[0,0,0];let count=0;for(const part of parts){count+=part.count;part.category?.forEach((n,i)=>category[i]+=n);for(const k of Object.keys(facets))part.facets[k].forEach((n,i)=>facets[k][i]+=n);}
+  return {parts,count,facets,category};
 }
 
 export function applyParticipantIntent(filters,group){

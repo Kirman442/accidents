@@ -1,4 +1,4 @@
-export const screens={overview:'Обзор',time:'Время и сезонность',severity:'Тяжесть и условия',map:'Карта ДТП'};
+export const screens={overview:'Обзор',time:'Время и сезонность',severity:'Последствия и условия',map:'Карта ДТП'};
 export const groups={all:'Все ДТП',pkw:'С участием Pkw',rad:'С велосипедистами',fuss:'С пешеходами',krad:'С мототранспортом',gkfz:'С грузовыми ТС',other_participant:'С другими участниками'};
 const integer=v=>v!==null&&v!==''&&Number.isInteger(Number(v))?Number(v):null;
 export function screenKey(value){return Object.hasOwn(screens,value)?value:'overview';}
@@ -24,6 +24,11 @@ export function initialShell(search,years,saved={}){
   return {screen,contexts,seen:Array.isArray(saved?.seen)?saved.seen.filter(k=>Object.hasOwn(screens,k)):[],format:['arrow','parquet'].includes(saved?.format)?saved.format:'arrow',budget:[32,100].includes(saved?.budget)?saved.budget:null};
 }
 export function contextEqual(a,b){return JSON.stringify(a)===JSON.stringify(b);}
+// Region is global; the single map/overview year is independent of analytics.
+export function sharedContexts(contexts,source){
+  const selected=contexts[source],single=source==='map'||source==='overview',analysis=single?contexts.time:selected;
+  return Object.fromEntries(Object.entries(contexts).map(([key,c])=>[key,key==='map'||key==='overview'?{...c,region:selected.region,year:single?selected.year:contexts.map.year}:{...c,region:selected.region,from:analysis.from,to:analysis.to,year:analysis.to,group:analysis.group}]));
+}
 export function routeQuery(screen,context){return '?'+new URLSearchParams({screen,...context});}
 export function mapTransfer(input,years){
   return {...contextFor('map',{region:input.region,year:input.to??input.year},years),group:Object.hasOwn(groups,input.group)?input.group:null};

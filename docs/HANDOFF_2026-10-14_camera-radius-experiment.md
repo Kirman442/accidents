@@ -1,0 +1,59 @@
+> ВАЖНАЯ КОРРЕКЦИЯ 14.10.2026: пользователь обнаружил отсутствие движения в автоматических прогонах. Найден reset initialViewState React-оболочкой. Прежние сравнения камер/ScreenGrid без фактического контроля движения НЕ использовать для выбора по скорости. Исправление и benchmarkVersion2 с motion.verified описаны в конце; старые результаты оставлены как история.
+
+# Продолжение: фиксированный радиус и внутренняя камера · 14.10.2026
+
+Задача: добавить два A/B-варианта в существующий map-layers-lab, без переноса в продукт и без публикации.
+
+- [x] Прочитаны текущие компоненты и benchmark hook.
+- [x] Фиксированный радиус GPU: 500/1000/2000/5000 м; прежний экранный режим сохранён.
+- [x] Камера deck.gl без React setState на каждом кадре; settled состояние для UI/auto/resize.
+- [x] Сценарии benchmark используют тот же маршрут и правильный драйвер камеры; параметры в JSON.
+- [x] Проверены land fit, Berlin, zoom и суммы, ESLint/тесты.
+- [x] Сохранены результаты и screenshot, обновлён журнал.
+
+Страница: http://127.0.0.1:5191/accidents/prototypes/map-layers-lab.html
+Файлы: prototypes/map-layers-lab.jsx, prototypes/use-layer-benchmark.js.
+Старые несвязанные изменения в рабочей папке не трогать. Коммит/пуш/деплой не запрошены.
+Код внесён; ESLint и тест layer-benchmark прошли. Сейчас проверяется браузер: сначала fixed 1000/react zoom, затем fixed/deck zoom и pan. Новые счётчики cameraStateUpdates и gpuUpdates (события домена, не чистое GPU-время). Внутренняя камера использует initialViewState и deck.setProps для программного маршрута; UI синхронизируется через 250 мс после остановки. H3 geometry selector отключён при GPU. При deck copy-контроль отключён, чтобы не выдавать копирование на settled update за копирование на каждый кадр.
+Браузер: fixed1000/react zoom RAF16.7ms, cameraStateUpdates15, gpuUpdates0; fixed1000/deck zoom RAF16.7ms, cameraStateUpdates14 (500ms остановки), gpuUpdates0. Это smoke test, не доказанный выигрыш FPS. Проверяются continuous pan, screen-radius контроль и команды fit. layer-size-model и h3-counts-worker тесты проходят.
+Непрерывный pan fixed1000: React cameraStateUpdates421, deck0; оба RAFmean16.7ms. Выигрыш FPS НЕ доказан, подтверждено сокращение обновлений React. Fixed zoom GPU-событий0. Осталось проверить screen zoom, команды fit и экспорт JSON/скриншот.
+
+## Итог: завершено
+- screen/react zoom: GPU-события3; fixed1000 zoom:0, обе камеры. Это callback домена, не GPU timer.
+- fixed pan: React обновления421, deck0 (последняя settled синхронизация после завершения прогона не входит в его счётчик); средний RAF16.7ms у обоих. Сокращение React работы доказано в smoke test, прирост FPS нет.
+- Внутренняя камера: fitBayern zoom5.85; сумма46938/11583 ячейки; Berlin zoom11.5 Autopoints13280; ручной pan/zoom обновляет UI до12.5; возврат Германияzoom4.6 и сумма273007/55644 ячейки. Всё при fixed1000.
+- ESLint чист; tests/layer-benchmark, layer-size-model, h3-counts-worker прошли (5 проверок). Браузер error/warn пуст.
+- Результаты: M:/projekte/germany/UAD_data/map-camera-radius-benchmark.json; screenshot рядом .png.
+- Страница оставлена GPU/fixed1000/deck/DPR1/Германия; при перезагрузке сохранены исходные defaults screen/react/native для контрольного сравнения.
+- Продукт не изменён, без коммита/пуша/деплоя.
+
+Следующее: пользователь сравнивает те же варианты на своём железе. Начать с fixed1000/react и fixed1000/deck (pan), затем screen и fixed (zoom). Параметры JSON cameraDriver/radiusPolicy/fixedRadius; счётчики cameraStateUpdates/gpuUpdates. Сравнивать одинаковую территорию, масштаб и посещённые слои. Увеличение FPS не обещать; фиксированный1km на масштабе страны даёт мелкие ячейки, это аналитический компромисс. Правила размера/камера в основной продукт ещё не выбраны.
+
+## Следующая гипотеза после чтения документации
+Пользователь проверил официальный ScreenGridLayer example574.6K на WebGL2: очень быстро даже на его текущей видеокарте. Приоритет следующего A/B — ScreenGrid WebGL2 на наших273007 ДТП в существующем lab. Реализация пока отсутствует. Документация/семантика/версия9.1.8 и план подробно записаны в docs/map-layers-experiment.md. CompositeLayer — кандидат организации общего AccidentsLayer, не автоматическое ускорение. Building Apps — старт/bundle, visgl:webgl-only только9.4.
+Официальный ScreenGrid WebGL2 дополнительно протестирован на574.6K после reload без backend-remount: pan/double-click zoom/cellSize5->20, ошибок нет. Найдена причина100K при повторном выборе: constructor оболочки заранее семплирует уже загруженные data до100000, не сбой GPU. Подробности/исходник в map-layers-experiment.md; screenshot UAD_data/screen-grid-webgl2-review.png. ScreenGrid в нашем lab всё ещё не добавлен.
+Прочитаны CPU/GPU overview и DataFilterExtension; подробный вывод записан в map-layers-experiment.md. Следующие приоритеты: ScreenGrid на наших данных -> GPU filtering со стабильными XYZ -> Hexagon+DataFilter integration-test (документация limitations противоречит возможностям shader plumbing9.1.8, поддержка пока НЕ подтверждена). Альтернатива: worker mask0/1 наGPU без пересборки координат, это не полностьюGPU filtering. CPU fallback/counts обязательно согласовать. Ничего из этого ещё не реализовано.
+Начат финальный сравнительный тест ScreenGrid по запросу пользователя. Scope: добавить только ScreenGrid в текущий lab, проверить GPU/SUM1/binary, viewport sum/picking и pan/zoom против fixedHex. DataFilter/Composite/прочие идеи отложены наv2. Реализация/проверки в процессе.
+ScreenGrid код добавлен: engine screen, binary XYZ/SUM1/GPU, ячейки targetPixels, одинаковая quantize палитра, margin0. Picking col/row/value с центром через viewport.unproject. Проверка суммы по binRange viewport (включая частичные крайние ячейки), а не вся страна. GPU backend диагностируется отдельно. ESLint чист; браузерные A/B и суммы ещё проверяются.
+Контроль перед ScreenGrid: Германия273007, fixed1000/deck/DPR1/zoom4.6, Hex pan RAF16.7/p9516.8/max16.9ms; CPUrender1.23ms. Сумма ScreenGrid и её pan/zoom ещё проверяются. countScreenGrid тест крайних неполных bins проходит.
+ScreenGrid впервые проверен: actual aggregatorType gpu; Германия273007, zoom4.6,24px, сумма273007/192 непустых bins совпала с CPU reference. Запущен Screen pan. Hex fixed1000 zoommean16.7/p9516.8/max17.4ms, CPUrender1.24ms. Скрин/JSON после обоих Screen прогонов ещё не сохранены.
+
+### ScreenGrid: проверка завершена
+Финальныйmargin2panmean16.7/p9516.8/max16.9ms, CPUrender0.92ms; >50ms0. Полная Германия273007 GPU=CPU,192bins. Consoleerror/warn пуст. Сохранены M:/projekte/germany/UAD_data/map-screen-grid-benchmark.json и map-screen-grid-benchmark.png. ПоследнийJSONpan записываетscreenMarginPixels2, предыдущиеScreenпрогоны былиmargin0; сравнениеFPS не выявило победителя. Стенд оставлен ScreenGrid24px/deck/DPR1/Auto/Германия. Тесты/ESLint прошли. Городское расхождение1ДТП сохранено и описано вmap-layers-experiment.md, НЕ скрыто. Дальше только выбор пользователя между fixedHex иScreen; DataFilter/Composite/H3/кластеризация — v2, новых оптимизаций сейчас не начинать. Основнойпродукт/деплой не менялись.
+Разобраныпрошлыетестыпользователя new.json13прогонов/new_2.json6. Всеenginegpu, НЕ ScreenGrid. fixed1000/react pan19.6–19.8ms vsdeck16.7; во2м screenradiuszoomCPU3.97ms/6Hexevents/longtask90 vsfixed1.15ms/0events. Поддерживают fixed+deck какэкономныйвариантv1, неуниверсальнаяFPSгарантия. Полныйразбор вmap-layers-experiment.md. Scope по-прежнему выборв1, остальныеэкспериментыv2.
+
+### Коррекция камеры / benchmarkVersion2 (проверяется)
+React DeckGL wrapper при своих перерендерах передавал неизменный initialViewState, перезаписывая deck.setProps(initialViewState:next). Вызовы и cameraRef могли изменяться без выполнения полного pan. Убрана передача начальнойкамеры черезwrapper, она задаётсяпрограммно при входе вdeckdriver. Reactdriver остаётсяcontrolled. Источник: node_modules/@deck.gl/react/src/deckgl.ts(useMemoforwardProps) и core/deck.ts(setPropsinitialViewState deepEqual/reset).
+Новыйbenchmark считывает именно отрисовываемый deck.viewport и MapLibre center/zoom вonAfterRender. JSON benchmarkVersion2 + motion.deck/motion.basemap (span/samplecounts), motion.verified. Дляpan обаlongitudeSpan>0.5°, дляzoom обаzoomSpan>0.5; безэтого прогонНЕПОДТВЕРЖДЁН. Switch не предназначен длядвижения, тамverifiednull. Start прокручиваеткарту ввидимуюобласть. СтарыеJSON не исправлялись и не удалялись, но сравнительныевыводы оскорости поним отозваны.
+ScreenGrid deck pan иzoom уже получилиverifiedtrue. ПроверяютсяReact иfixedHex; сохранениефинальныхJSON/скрина ещё впереди.
+BenchmarkVersion2: ScreenGrid/deck pan иzoom motionverifiedtrue, RAF16.7ms. ScreenGrid/react panverifiedtrue RAF18.0/p9533.3/max66.7ms; Reactzoomverifiedtrue RAF16.7. FixedHex/deck pan/zoom проверяются. Все предыдущие неподтверждённые сравнения камер, включаяпользовательскиеnew/new_2, отозваны именнокак сравнения производительности (ручные наблюдения пользователя и отдельные проверкисумм сохраняются).
+
+### Коррекция движения: завершено
+Пройдены6новыхпрогонов версии2 (ScreenGridReact/deckpan/zoom; fixedHexdeckpan/zoom). Во всех motionverifiedtrue по реальнымDeck иMapLibre камерам. FixedHexdeckzoom RAF16.7/p9516.8/max18.4,CPUsubmission1.97ms. JSON/скриншот сохранены UAD_data/map-motion-verified-benchmark.json/.png. ESLintclean, tests/layer-benchmark2проверки/screen-grid-model1проверкапрошли, consolewarnings/errorsпуст. Старыеbaselineвыводыотозваны; свежие сравнениятолькосbenchmarkVersion2 иmotionverifiedtrue. СтендоставленfixedHex1000/deck/Germany. Новыхоптимизацийнепланируемдоокончательноговыборапользователя.
+Получен пользовательскийфинальный JSON ...ScreenGridLayerGPU_HexagonLayerGPU.json (benchmarkVersion2). Всеpan/zoom verifiedtrue. Наzoom6.75ScreenGrid32pan16.7/p9516.8/max16.9, FixedHex1000pan18.9/p9533.4/max50, screen-sizedHexpan16.9/max50.4. Screen32самыйровныйвэтомфайле, предлагаетсядляобзорнойкартыv1, но нужно решениепользователя; кодпродуктанеменятьбезсогласования. Screen24провереннадругомzoom7.01,нечистыйA/B32vs24. Разборвmap-layers-experiment.md. Остальныеэкспериментыv2.
+Дополнительный тест ScreenGridGPU32: zoom5.404/273007/deck/DPR1, pan/zoomverifiedtrue и16.7ms, никакихlongtasks/кадров>50ms. ВыводScreen32дляобзорнойкартыv1 подтверждается вторыммасштабом; ждёмрешенияпользователя, настройкипродуктанеменялись.
+
+## Итоговое решение пользователя · 14.10.2026
+Согласовано: фиксированный Hexagon для первой версии, без экструзии. Причина: стабильные географические ячейки при движении, пользователь предпочитает это постоянной перестройке ScreenGrid. Не называть самым быстрым: последний тест fixedpan19.55ms/p9533.4/max100 противScreen16.67/p9516.8/max16.8. ScreenGrid/DataFilter/Composite и остальные эксперименты —v2. Радиус1000м был в тестах; окончательные радиус/Auto thresholds отдельным сообщением не утверждены. Следующий шаг: подготовить перенос согласованного варианта в основную карту в рамках дальнейшего согласования. Продуктовый код и публикация сейчас не менялись.
+Исправляется zoom кHex: воспроизведёнпереходБерлин->пустаяобласть. Вdeck9.1.8getPickingInfo забываетhexOriginCommon, хотяrendererдобавляетoriginCommon. Внашемhexagon-picking.jsцентрвосстанавливаетсяизcol/row/radiusCommon/hexOriginCommon+unprojectFlat; node_modulesнеизменены. Тестыodd/even/negativeбиннаzoom4.6/9/13+invalidstateпрошли. Браузергородскойклик123ДТП: zoom11.5->13.5,центр13.43277,52.52187,остаётсяБерлин. Проверяетсярегиональныймасштаб.
+Hexzoom исправлен и проверен: helperhexagon-picking.js учитываетoriginCommon, посколькуdeck9.1.8object.positionегоупускает. ПриInvalidstateкнопкаdisabled. Город11.5->13.5и регион9.02->11.02переходыостаютсяБерлин. Screen11.02->13.02тожеcorrect. Тестыodd/even/negativebin иzoom4.6/9/13+invalidstate; screenshotUAD_data/hexagon-zoom-center-fixed.png. Прибудущемапгрейдеdeckпроверитьprivate statecompatibility. node_modules/основноеприложение/деплойнеизменены.

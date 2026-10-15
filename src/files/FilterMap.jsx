@@ -1,17 +1,21 @@
-import {useEffect,useMemo,useRef,useState} from 'react';
+import {useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import DeckGL from '@deck.gl/react';
-import {ScatterplotLayer} from '@deck.gl/layers';
+import {ScatterplotLayer,GeoJsonLayer} from '@deck.gl/layers';
+import {loadStateBoundaries} from './geography-data.js';
 import {DataFilterExtension} from '@deck.gl/extensions';
 import {Map as MapView} from '@vis.gl/react-maplibre';
 import RecordCard from './RecordCard.jsx';
-import HourGrid from './HourGrid.jsx';
-import {describeHours} from './hours-selection.js';
+import MapPanel from './MapPanel.jsx';
+import {HexagonLayer,HeatmapLayer} from '@deck.gl/aggregation-layers';
+import {WebMercatorViewport} from '@deck.gl/core';
+import {hexagonCenter} from './hexagon-picking.js';
+import {autoMode,displayMode,filteredSnapshot,boundaryBounds,HEX_RADIUS,mapPalette} from './map-layer-model.js';
 import {decodeMapFilters,migrateMapFilters,mapSelectionLink} from './map-link.js';
 import {PICK_LIMIT} from './record-details.js';
-import {emptyFilters,fields,participantNames,seasons,mergeQueryParts,applyParticipantIntent} from './map-query.js';
+import {emptyFilters,participantNames,mergeQueryParts,applyParticipantIntent} from './map-query.js';
 const nf=new Intl.NumberFormat('ru-RU'),extension=new DataFilterExtension({filterSize:1});
 const origin='http://127.0.0.1:5188';
-export default function FilterMap({loader,view,options,land,names,years,request,setLand,active=true,selectionControls=true,filterIntent=null,routeFilters=null,mapStyle='https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'}){
+export default function FilterMap({loader,view,options,land,names,years,request,setLand,active=true,selectionControls=true,filterIntent=null,routeFilters=null,onReturn=null,onRestore=null,theme='dark',mapStyle='https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'}){
   const [filters,setFilters]=useState(()=>{
     let f=emptyFilters();const group=new URLSearchParams(location.search).get('group');
     try{const shared=decodeMapFilters(routeFilters?.value||new URLSearchParams(location.search).get('mf'));if(shared)return shared;const current=sessionStorage.getItem('uad-map-filters-v2'),saved=JSON.parse(current||sessionStorage.getItem('uad-map-filters')||'null');if(saved)f=migrateMapFilters(saved,!current);}catch{/* Ignore incompatible saved filters. */}
@@ -19,17 +23,28 @@ export default function FilterMap({loader,view,options,land,names,years,request,
     if(group in participantNames)f[group]=1;return f;
   });
   const [result,setResult]=useState(()=>({...mergeQueryParts([]),source:[],updating:true,error:'',ms:0}));
-  const deck=useRef(null),[selection,setSelection]=useState(null),[selectionNotice,setSelectionNotice]=useState('');
-  const [originSelection,setOriginSelection]=useState(null),[shareNotice,setShareNotice]=useState(''),[shareFallback,setShareFallback]=useState('');
-  useEffect(()=>{if(!routeFilters?.value)return;try{setFilters(decodeMapFilters(routeFilters.value));}catch(e){setShareNotice(e.message);}},[routeFilters]);
-  const [open,setOpen]=useState(null),menu=useRef(null),scheduler=useRef({version:0,running:false,latest:null,alive:true});
-  useEffect(()=>{const s=scheduler.current;s.alive=true;return()=>{s.alive=false;s.version++;};},[]);
+  const [boundaries,setBoundaries]=useState(null),[boundaryError,setBoundaryError]=useState(''),[boundaryAttempt,setBoundaryAttempt]=useState(0),[showBoundaries,setShowBoundaries]=useState(true);
   useEffect(()=>{
-    if(!active)return;
-    const close=e=>{if(e.type==='keydown'&&e.key==='Escape'){if(open)setOpen(null);else{setSelection(null);setSelectionNotice('');}}else if(e.type==='pointerdown'&&menu.current&&!menu.current.contains(e.target))setOpen(null);};
-    document.addEventListener('pointerdown',close);document.addEventListener('keydown',close);
-    return()=>{document.removeEventListener('pointerdown',close);document.removeEventListener('keydown',close);};
-  },[open,active]);
+    if(!active||boundaries||view.state!=='ready')return;
+    let alive=true;
+    loadStateBoundaries().then(data=>{if(alive){setBoundaries(data);setBoundaryError('');}}).catch(e=>{if(alive)setBoundaryError(e.message);});
+    return()=>{alive=false;};
+  },[active,boundaries,view.state,boundaryAttempt]);
+  const deck=useRef(null),[selection,setSelection]=useState(null),[selectionNotice,setSelectionNotice]=useState('');
+  const [,setOriginSelection]=useState(null),[shareNotice,setShareNotice]=useState(''),[shareFallback,setShareFallback]=useState('');
+  useEffect(()=>{if(!routeFilters?.value)return;try{setFilters(decodeMapFilters(routeFilters.value));}catch(e){setShareNotice(e.message);}},[routeFilters]);
+  const [panel,setPanel]=useState('summary'),[cell,setCell]=useState(null),[mode,setMode]=useState('hex'),[auto,setAuto]=useState('hex');
+  const camera=useRef({longitude:10.4,latitude:51.1,zoom:5}),mapBox=useRef(null),fittedLand=useRef(null),[cameraReady,setCameraReady]=useState(false);
+  const [message,setMessage]=useState(null),[settledZoom,setSettledZoom]=useState(5),settleTimer=useRef(null);
+  useEffect(()=>()=>clearTimeout(settleTimer.current),[]);
+  useEffect(()=>{deck.current?.deck?.setProps({initialViewState:{...camera.current}});setCameraReady(true);},[]);
+  const notify=useCallback((text,kind='success')=>{setMessage(previous=>previous?.kind==='error'&&kind!=='error'?previous:{text,kind});},[]);
+  useEffect(()=>{if(!message||message.kind==='error')return;const timer=setTimeout(()=>setMessage(null),3000);return()=>clearTimeout(timer);},[message]);
+  const manualFilters=useRef(null),[temporary,setTemporary]=useState(false);
+  const scheduler=useRef({version:0,running:false,latest:null,alive:true});
+  useEffect(()=>{scheduler.current.version++;setResult({...mergeQueryParts([]),source:[],updating:true,error:'',ms:0});},[options.year,land]);
+  useEffect(()=>{if(!active)return;const escape=e=>{if(e.key==='Escape'&&panel==='record'){setSelection(null);setCell(null);setPanel('summary');}};document.addEventListener('keydown',escape);return()=>document.removeEventListener('keydown',escape);},[active,panel]);
+  useEffect(()=>{const s=scheduler.current;s.alive=true;return()=>{s.alive=false;s.version++;};},[]);
   useEffect(()=>{
     const receive=e=>{if(e.origin!==origin||e.source!==window.parent||e.data?.type!=='uad-selection')return;
       if(names[e.data.land])setLand(e.data.land);
@@ -40,6 +55,7 @@ export default function FilterMap({loader,view,options,land,names,years,request,
     try{sessionStorage.setItem('uad-map-selection',JSON.stringify({year:options.year,land}));sessionStorage.setItem('uad-map-filters-v2',JSON.stringify(filters));}catch{/* Optional browser storage. */}
   },[options.year,land,years,filters,result.count]);
   useEffect(()=>{
+    if(!active||view.year!==options.year||view.format!==options.format)return;
     const s=scheduler.current,version=++s.version,source=view.parts.filter(p=>!land||p.land===land);
     s.latest={version,source,filters,year:options.year,format:options.format};
     setResult(r=>({...r,updating:true,error:''}));
@@ -57,9 +73,9 @@ export default function FilterMap({loader,view,options,land,names,years,request,
       }finally{s.running=false;}
     }
     pump();
-  },[view.parts,land,filters,options.year,options.format,loader]);
+  },[view.parts,view.year,view.format,active,land,filters,options.year,options.format,loader]);
   useEffect(()=>{
-    if(filterIntent&&(filterIntent.group==='all'||Object.hasOwn(participantNames,filterIntent.group))){setFilters(f=>applyParticipantIntent(f,filterIntent.group));setSelectionNotice('');}
+    if(filterIntent&&(filterIntent.group==='all'||Object.hasOwn(participantNames,filterIntent.group))){setFilters(f=>{if(!manualFilters.current)manualFilters.current=f;return applyParticipantIntent(emptyFilters(),filterIntent.group);});setTemporary(true);setSelectionNotice('');}
   },[filterIntent]);
   const masks=useMemo(()=>new Map(result.parts.map(p=>[p.land,p.mask])),[result.parts]);
   useEffect(()=>{
@@ -69,14 +85,16 @@ export default function FilterMap({loader,view,options,land,names,years,request,
     const part=result.source.find(p=>p.land===h.land);
     if(!part||part.ids[h.index]!==h.id||!selection.unfiltered&&!masks.get(h.land)?.[h.index]){setSelection(null);setOriginSelection(null);setSelectionNotice('Выбранное ДТП скрыто текущими фильтрами.');}
   },[selection,options.year,land,result.updating,result.source,masks,view.state]);
-  const lands=useMemo(()=>result.source.map(p=>p.land),[result.source]);
+
   function choose(handle,choices=[handle],truncated=false,neighbor=false,unfiltered=false){
     const part=result.source.find(p=>p.land===handle.land);
     if(!part||part.ids[handle.index]!==handle.id||!unfiltered&&!masks.get(handle.land)?.[handle.index])return;
     if(neighbor)setOriginSelection(previous=>previous||selection);else setOriginSelection(null);
-    setSelection({handle:{...handle,year:options.year},choices,truncated,unfiltered});setSelectionNotice(unfiltered?'Просмотр соседнего ДТП вне текущего отбора; фильтры карты сохранены.':'');setOpen(null);
+    setCell(null);setSelection({handle:{...handle,year:options.year},choices,truncated,unfiltered});setSelectionNotice(unfiltered?'Просмотр соседнего ДТП вне текущего отбора; фильтры карты сохранены.':'');setPanel('record');
   }
   function pick(info,event){
+    if(info.layer?.id.startsWith('map-hex')&&info.object&&!result.updating){const layer=deck.current?.deck?.props.layers.find(l=>l.id==='map-hex'),center=hexagonCenter(info.object,layer?.state,layer?.context.viewport);setCell({count:info.object.count,center});setSelection(null);setPanel('record');return;}
+    if(activeMode!=='points')return;
     if(!active||result.updating||!result.source.length||!Number.isFinite(info.x)||!Number.isFinite(info.y))return;
     const radius=event?.pointerType==='touch'||event?.srcEvent?.pointerType==='touch'||window.matchMedia('(pointer: coarse)').matches?10:6;
     const hits=deck.current.pickMultipleObjects({x:info.x,y:info.y,radius,depth:PICK_LIMIT+1});
@@ -88,56 +106,42 @@ export default function FilterMap({loader,view,options,land,names,years,request,
     if(!distinct.length){setSelection(null);setSelectionNotice('');return;}
     const choices=distinct.slice(0,PICK_LIMIT);choose(choices[0],choices,distinct.length>PICK_LIMIT);
   }
+
+  const snapshot=useMemo(()=>filteredSnapshot(result.source,masks,options.year),[result.source,masks,options.year]);
+  const pointData=useMemo(()=>new Map(result.source.map(p=>[p.land,{length:p.ids.length,attributes:{getPosition:{value:p.positions,size:2},getFilterValue:{value:masks.get(p.land),size:1}}}])),[result.source,masks]);
+  const activeMode=displayMode(mode,auto);
+  const [visited,setVisited]=useState({hex:true,points:false,heat:false});
+  useEffect(()=>{setVisited(v=>v[activeMode]?v:{...v,[activeMode]:true});},[activeMode]);
+  useEffect(()=>{setCell(null);},[snapshot]);
+  useEffect(()=>{if(selectionNotice)notify(selectionNotice,'warning');},[selectionNotice,notify]);
+  useEffect(()=>{if(shareNotice)notify(shareNotice);},[shareNotice,notify]);
+  useEffect(()=>{if(result.error||view.error)notify(result.error||view.error,'error');else setMessage(m=>m?.kind==='error'?null:m);},[result.error,view.error,notify]);
+  useEffect(()=>{if(!active||!cameraReady||!boundaries||fittedLand.current===land)return;const bounds=boundaryBounds(boundaries,land),rect=mapBox.current?.getBoundingClientRect();if(!bounds||!rect?.width)return;const next=new WebMercatorViewport({width:rect.width,height:rect.height}).fitBounds(bounds,{padding:35,maxZoom:11});camera.current={longitude:next.longitude,latitude:next.latitude,zoom:next.zoom};deck.current?.deck?.setProps({initialViewState:{...camera.current}});setAuto(previous=>autoMode(previous,next.zoom));setSettledZoom(next.zoom);fittedLand.current=land;},[land,boundaries,active,cameraReady]);
+  function zoomTo(center,zoom){if(!center)return;camera.current={...camera.current,longitude:center[0],latitude:center[1],zoom};deck.current?.deck?.setProps({initialViewState:{...camera.current}});setAuto(previous=>autoMode(previous,zoom));setSettledZoom(zoom);}
   const layers=useMemo(()=>{
-    const points=result.source.map(p=>new ScatterplotLayer({id:'filtered-land-'+p.land,
-    data:{length:p.ids.length,attributes:{getPosition:{value:p.positions,size:2},getFilterValue:{value:masks.get(p.land),size:1}}},
-    extensions:[extension],filterRange:[1,1],radiusUnits:'pixels',getRadius:1.2,getFillColor:[22,115,164,190],pickable:active&&!result.updating}));
-    const h=selection?.handle,part=h&&result.source.find(p=>p.land===h.land);
-    if(part&&h.year===options.year&&(selection.unfiltered||masks.get(h.land)?.[h.index]))points.push(new ScatterplotLayer({id:'selected-ring',data:[{position:[part.positions[h.index*2],part.positions[h.index*2+1]]}],getPosition:d=>d.position,radiusUnits:'pixels',getRadius:8,filled:false,stroked:true,getLineColor:[214,94,40,255],getLineWidth:2,lineWidthUnits:'pixels',lineWidthMinPixels:2,pickable:false}));
-    return points;
-  },[result.source,result.updating,masks,selection,options.year,active]);
+    const points=result.source.map(p=>new ScatterplotLayer({id:'filtered-land-'+p.land,visible:activeMode==='points',
+      data:pointData.get(p.land),extensions:[extension],filterRange:[1,1],radiusUnits:'pixels',getRadius:2,getFillColor:theme==='dark'?[121,180,218,210]:[22,115,164,200],pickable:active&&!result.updating}));
+    const list=[];
+    if(visited.hex)list.push(new HexagonLayer({id:'map-hex',visible:activeMode==='hex',data:snapshot.binary,radius:HEX_RADIUS,gpuAggregation:true,colorAggregation:'SUM',getColorWeight:1,elevationAggregation:'SUM',getElevationWeight:1,extruded:false,coverage:.9,opacity:.65,colorRange:mapPalette,colorScaleType:'quantize',colorDomain:[0,100],pickable:active&&!result.updating}));
+    if(visited.heat)list.push(new HeatmapLayer({id:'map-heat',visible:activeMode==='heat',data:snapshot.binary,getWeight:1,radiusPixels:30,intensity:1,threshold:.05,weightsTextureSize:1024,debounceTimeout:250,aggregation:'SUM'}));
+    if(visited.points)list.push(...points);
+    const h=selection?.handle,p=h&&result.source.find(p=>p.land===h.land);
+    if(p&&h.year===options.year&&masks.get(h.land)?.[h.index])list.push(new ScatterplotLayer({id:'selected-ring',data:[[p.positions[h.index*2],p.positions[h.index*2+1]]],getPosition:d=>d,radiusUnits:'pixels',getRadius:8,filled:false,stroked:true,getLineColor:[242,160,64,255],getLineWidth:2,lineWidthUnits:'pixels',pickable:false}));
+    if(boundaries&&showBoundaries)list.push(new GeoJsonLayer({id:'state-boundaries',data:boundaries,filled:false,stroked:true,pickable:false,getLineColor:f=>Number(f.properties.state_code)===land?[242,160,64,230]:theme==='dark'?[190,208,215,160]:[55,85,95,170],getLineWidth:f=>Number(f.properties.state_code)===land?2:1,lineWidthUnits:'pixels',lineWidthMinPixels:1,updateTriggers:{getLineColor:[land,theme],getLineWidth:[land]}}));
+    return list;
+  },[result.source,result.updating,masks,selection,options.year,active,boundaries,showBoundaries,land,theme,activeMode,snapshot,visited,pointData]);
   const complete=view.state==='ready'&&!result.updating&&!result.error;
-  const countOption=(key,option)=>option.hours?option.hours.reduce((n,h)=>n+(result.facets[key]?.[h]||0),0):result.facets[key]?.[option.value]||0;
-  const selected=(key,o)=>o.hours?o.hours.every(h=>filters[key].includes(h)):filters[key].includes(o.value);
-  const toggle=(key,o)=>setFilters(f=>{const values=o.hours||[o.value],on=selected(key,o);return {...f,[key]:on?f[key].filter(v=>!values.includes(v)):[...new Set([...f[key],...values])]};});
-  const summary=key=>key==='hour'?describeHours(new Set(filters.hour)):key==='participants'?Object.entries(participantNames).filter(([k])=>filters[k]!=null).map(([k,n])=>(filters[k]===1?'С: ':'Без: ')+n).join('; ')||'Все':fields[key].options.filter(o=>selected(key,o)).map(o=>o.label).join(', ')||'Все';
-  async function copySelection(){const url=mapSelectionLink(location.href,options.year,land,filters);try{await navigator.clipboard.writeText(url);setShareNotice('Ссылка на полный отбор скопирована.');setShareFallback('');}catch{setShareFallback(url);setShareNotice('Скопируйте ссылку из поля ниже.');}}
-  const loading=['catalog','switching','loading'].includes(view.state);
+  async function copySelection(){const url=mapSelectionLink(location.href,options.year,land,filters);try{await navigator.clipboard.writeText(url);notify('Ссылка на полный отбор скопирована.');setShareFallback('');}catch{setShareFallback(url);notify('Скопируйте ссылку из поля в диагностике.','warning');}}
+  function closeRecord(){setSelection(null);setCell(null);setOriginSelection(null);setSelectionNotice('');setPanel('summary');}
+  const record=selection&&<RecordCard key={selection.handle.year+':'+selection.handle.id} loader={loader} handle={selection.handle} choices={selection.choices} truncated={selection.truncated} names={names} format={options.format} onSelect={choose} onScenario={(key,value)=>{setFilters(f=>({...f,[key]:[value]}));notify('Фильтр применён. Остальные условия сохранены.');}} onZoom={r=>zoomTo([r.longitude,r.latitude],Math.max(camera.current.zoom,16))} onNotify={notify} onClose={closeRecord}/>;
   return <main className="filtered-app">
-    {selectionControls&&window.parent===window&&<section className="map-filterbar" aria-label="Выбор карты"><label>Год <select aria-label="Год карты" value={options.year} onChange={e=>request({...options,year:Number(e.target.value)})}>{years.map(y=><option key={y}>{y}</option>)}</select></label><label>Территория <select aria-label="Территория" value={land} onChange={e=>setLand(Number(e.target.value))}>{names.map((name,i)=><option value={i} key={name}>{name}</option>)}</select></label></section>}
-    <section className="map-filterbar" ref={menu} aria-label="Фильтры карты">
-    {['participants',...Object.keys(fields)].map(key=><div className="filter-control" key={key}>
-      <button className={open===key?'filter-toggle active':'filter-toggle'} aria-expanded={open===key} onClick={()=>setOpen(open===key?null:key)}>{key==='participants'?'Участники':fields[key].label}: {summary(key)}</button>
-      {open===key&&<section className="filter-menu" aria-label={key==='participants'?'Выбор участников':fields[key].label}>
-        {key!=='hour'&&<button onClick={()=>setFilters(f=>({...f,...(key==='participants'?Object.fromEntries(Object.keys(participantNames).map(k=>[k,null])):{[key]:[]})}))}>Все / сбросить</button>}
-        {key==='hour'?<HourGrid hours={filters.hour} onChange={hours=>setFilters(f=>({...f,hour:hours}))}/>:key==='participants'?Object.entries(participantNames).map(([k,name])=><label key={k}>{name}<select aria-label={name} value={filters[k]==null?'all':filters[k]} onChange={e=>setFilters(f=>({...f,[k]:e.target.value==='all'?null:Number(e.target.value)}))}>
-          <option value="all">Все · {nf.format((result.facets[k]?.[0]||0)+(result.facets[k]?.[1]||0))}</option>
-          {[1,0].map(v=><option key={v} value={v} disabled={complete&&!result.facets[k]?.[v]&&filters[k]!==v}>{v?'С участием':'Без участия'} · {nf.format(result.facets[k]?.[v]||0)}</option>)}</select></label>):<>
-          {key==='month'&&<div className="filter-presets">{seasons.map(s=><button key={s.label} onClick={()=>setFilters(f=>({...f,month:s.values}))}>{s.label}</button>)}</div>}
-          {key==='weekday'&&<div className="filter-presets">{[{label:'Будни',values:[2,3,4,5,6]},{label:'Выходные',values:[7,1]}].map(s=><button key={s.label} onClick={()=>setFilters(f=>({...f,weekday:s.values}))}>{s.label}</button>)}</div>}
-          {fields[key].options.map(o=><label className="filter-option" key={o.value}><input type="checkbox" checked={selected(key,o)} disabled={complete&&!countOption(key,o)&&!selected(key,o)} onChange={()=>toggle(key,o)}/><span>{o.label}</span><b>{nf.format(countOption(key,o))}</b></label>)}
-        </>}
-        {key!=='hour'&&<p className="filter-note">Числа учитывают остальные фильтры, без ограничения этого фильтра. {key==='participants'?'Между группами — И.':'Внутри списка — ИЛИ; между фильтрами — И.'}</p>}
-        {key==='month'&&<p className="filter-note">Зима: январь, февраль и декабрь выбранного года.</p>}
-        {key==='hour'&&<p className="filter-note">Протяните по часам. Отбор обновится после отпускания. Пустой выбор — 0 ДТП.</p>}
-      </section>}
-    </div>)}
-    <button onClick={()=>{setFilters(emptyFilters());setOpen(null);setSelectionNotice('');}}>Сбросить все фильтры</button>
-    <button onClick={copySelection}>Скопировать ссылку на отбор</button>
-    <label>Кеш данных <select aria-label="Кеш данных" value={options.budget} onChange={e=>request({...options,budget:Number(e.target.value)})}><option value="100">100 МиБ</option><option value="32">32 МиБ</option></select></label>
-  </section>
-  {shareNotice&&<p className="filter-note" role="status">{shareNotice} <a href={mapSelectionLink(location.href,options.year,land,filters)} target="_blank" rel="noopener noreferrer">Открыть текущий отбор ↗</a></p>}{shareFallback&&<input aria-label="Ссылка на полный отбор" readOnly value={shareFallback} onFocus={e=>e.target.select()} style={{width:'100%'}}/>}
-  <div className="filtered-status" role="status"><strong>{nf.format(result.count)} ДТП</strong> · {names[land]} · {options.year}
-    {result.updating?' · Обновляем отбор; на карте прежний результат…':loading?` · Загружено ${view.loaded}/16 земель`:' · Отбор готов'}
-    <small>Кеш: {(view.cache.bytes/1048576).toFixed(2)} / {options.budget} МиБ{view.fromCache?' · Год из памяти':''} · Пересчёт: {result.ms.toFixed(0)} мс</small>
-  </div>
-  {(result.error||view.error)&&<p role="alert">{result.error||view.error}<button onClick={()=>request({...options})}>Повторить загрузку</button></p>}
-  {selectionNotice&&<p className="filter-note" role="status">{selectionNotice}</p>}
-  <div className={selection?'record-workspace with-card':'record-workspace'}><div className="filtered-canvas"><DeckGL ref={deck} onClick={pick} pickingRadius={6} initialViewState={{longitude:10.4,latitude:51.1,zoom:5}} controller layers={layers}>
-    <MapView mapStyle={mapStyle} attributionControl /></DeckGL></div>
-    {selection&&<RecordCard key={selection.handle.year+':'+selection.handle.id} loader={loader} handle={selection.handle} choices={selection.choices} truncated={selection.truncated} names={names} format={options.format} filters={filters} lands={lands} ready={complete} onSelect={choose} onScenario={(key,value)=>setFilters(f=>({...f,[key]:[value]}))} onBack={originSelection?()=>{setSelection(originSelection);setOriginSelection(null);setSelectionNotice('');}:null} onClose={()=>{setSelection(null);setOriginSelection(null);setSelectionNotice('');}}/>}
-  </div>
-  {!result.updating&&!loading&&!result.count&&!result.error&&<p className="filter-empty">Нет ДТП по выбранным условиям. Измените условия или сбросьте фильтры.</p>}
-  <p className="filter-note">Одна точка — одно ДТП. Нажмите на точку, чтобы открыть карточку ДТП. Выбранный год загружается по всем землям, отбор земли использует уже загруженные данные.</p>
+    {selectionControls&&<div className="map-layer-controls"><label>Год<select value={options.year} onChange={e=>request({...options,year:Number(e.target.value)})}>{years.map(y=><option key={y}>{y}</option>)}</select></label><label>Территория<select value={land} onChange={e=>setLand(Number(e.target.value))}>{names.map((name,i)=><option key={i} value={i}>{name}</option>)}</select></label></div>}
+    <div className="map-layer-controls" role="group" aria-label="Слои карты">{[['hex','Ячейки'],['heat','Тепловая карта']].map(([key,label])=><button key={key} aria-pressed={mode===key} title={key==='hex'?'При приближении — отдельные ДТП':undefined} onClick={()=>{setMode(key);setCell(null);}}>{label}</button>)}</div>
+    <div className="map-status" role="status">{result.updating?'Обновляем отбор…':view.state!=='ready'?'Загружено '+view.loaded+'/16 земель':!result.count?'Нет ДТП по выбранным условиям. Измените условия или сбросьте фильтры.':nf.format(result.count)+' ДТП · '+names[land]+' · '+options.year}</div>
+    <div className="map-legend">{activeMode==='hex'?<>Число ДТП в ячейке · радиус 1 км · 0<span className="map-palette">{mapPalette.map((c,i)=><i key={i} style={{background:'rgb('+c.join(',')+')'}}/>)}</span>100 и выше</>:activeMode==='heat'?'Сглаженная концентрация ДТП; цвет не означает точное число или риск поездки.':'Одна точка — одно геокодированное ДТП с пострадавшими.'}</div>
+    <div className="record-workspace"><div ref={mapBox} className="filtered-canvas" aria-label="Карта ДТП"><DeckGL ref={deck} useDevicePixels={1} initialViewState={undefined} onLoad={()=>{deck.current?.deck?.setProps({initialViewState:{...camera.current}});setCameraReady(true);}} onViewStateChange={({viewState})=>{camera.current=viewState;setAuto(previous=>autoMode(previous,viewState.zoom));clearTimeout(settleTimer.current);settleTimer.current=setTimeout(()=>setSettledZoom(camera.current.zoom),250);}} controller layers={layers} onClick={pick} getTooltip={info=>info.layer?.id.startsWith('map-hex')&&info.object?nf.format(info.object.count)+' ДТП':null}><MapView mapStyle={mapStyle} attributionControl/></DeckGL></div>
+    <MapPanel region={land} name={names[land]} data={{count:result.count,category:result.category,year:options.year,pending:!complete}} panel={panel} setPanel={setPanel} filters={filters} setFilters={setFilters} boundaries={showBoundaries} setBoundaries={setShowBoundaries} record={record} cell={cell} onCellZoom={()=>zoomTo(cell.center,Math.min(16,camera.current.zoom+2))} onShare={copySelection} onAnalyze={()=>notify('Аналитика места запланирована для следующей версии.','warning')} message={message} transferActions={temporary&&<div className="panel-actions">{onReturn&&<button onClick={onReturn}>Вернуться к графику</button>}<button onClick={()=>{setFilters(manualFilters.current||emptyFilters());manualFilters.current=null;setTemporary(false);onRestore?.();notify('Ваши фильтры карты восстановлены.');}}>Восстановить мой отбор карты</button></div>} diagnostics={<>{(result.error||view.error)&&<p role="alert">{result.error||view.error}</p>}<p>Слой: {activeMode} · Масштаб: {settledZoom.toFixed(2)} · Радиус ячеек: {HEX_RADIUS} м</p><p>Кеш: {(view.cache.bytes/1048576).toFixed(2)} / {options.budget} МиБ · Отбор: {result.ms.toFixed(0)} мс · {complete?'готов':'ожидание'}</p>{shareFallback&&<input aria-label="Ссылка на полный отбор" value={shareFallback} readOnly onFocus={e=>e.target.select()}/>}<label>Кеш данных<select value={options.budget} onChange={e=>request({...options,budget:Number(e.target.value)})}><option value="100">100 МиБ</option><option value="32">32 МиБ</option></select></label>{(result.error||view.error)&&<button onClick={()=>request({...options})}>Повторить загрузку</button>}</>}/></div>
+    {boundaryError&&<p className="filter-note">Границы не загружены. <button onClick={()=>setBoundaryAttempt(n=>n+1)}>Повторить</button></p>}
+    {boundaries&&showBoundaries&&<p className="filter-note">Границы земель: © BKG (2026), <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer">dl-de/by-2-0</a>. Упрощены; источник на 01.01.2026.</p>}
   </main>;
 }

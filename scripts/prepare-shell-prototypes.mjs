@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import './prepare-geography.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const output=path.join(root,'public','prototypes');fs.mkdirSync(output,{recursive:true});
 fs.copyFileSync(path.join(root,'src/app/prototype-bridge.js'),path.join(root,'public/prototype-bridge.js'));
