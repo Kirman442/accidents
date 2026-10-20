@@ -1,6 +1,8 @@
 # React + Supabase + Deck.gl
 Germany Road traffic Accidents Visualization
 
+Scheduled database availability check: [setup instructions](docs/supabase-keepalive.md).
+
 Interactive accident map in Germany with filtering by:
 - Country regions
 - Days of the week
