@@ -31,3 +31,7 @@ logs/
 # Local publication artifacts and generated Edge asset registry
 /.netlify/
 /netlify/data-index.js
+
+# Local development journals are not publication files
+/README_*.md
+/docs/
