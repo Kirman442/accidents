@@ -6,6 +6,8 @@ import { ScatterplotLayer } from '@deck.gl/layers';
 import { usePartitionLoader } from '../utils/dataUtilsUI.prod'; //fetchFilteredData,
 import { lightingEffect, colorRange } from '../utils/SupabaseEffects.prod';
 import LegendPanel from '../utils/LegendPanel.prod.jsx';
+import LegalDialog from '../../LegalDialog.jsx';
+import MapAttribution from '../../MapAttribution.jsx';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import '../../../css/tooltip.css';
 
@@ -23,6 +25,7 @@ const INITIAL_VIEW_STATE = {
 };
 
 const SupaBaseUI = () => {
+    const attributionHost = useRef(null);
     const { state, loadPartitions } = usePartitionLoader();
     const { loading, errors, initialFeatures, initialLoadTime, loadingAttributes, fullFeatures, fullLoadTime } = state;
     const [startTime, setStartTime] = useState(null);
@@ -318,7 +321,9 @@ const SupaBaseUI = () => {
                 getTooltip={getTooltip}
                 effects={[lightingEffect]}
             >
-                <Map reuseMaps mapStyle={mapStyle} />
+                <Map reuseMaps mapStyle={mapStyle} attributionControl={false}>
+                    <MapAttribution containerRef={attributionHost} />
+                </Map>
 
                 {loading && (
                     <div style={{
@@ -349,6 +354,8 @@ const SupaBaseUI = () => {
                 <div className="rotate-shift">Hold down shift to rotate <br />Zum Drehen Umschalttaste gedrückt halten</div>
 
             </DeckGL>
+            <div ref={attributionHost} className="map-attribution-overlay" />
+            <LegalDialog />
             {/* <div style={{ position: 'absolute', top: 20, left: 20, backgroundColor: 'white', padding: 10, borderRadius: 5, zIndex: 1 }}>
                 <h1>Тестирование загрузки данных</h1>
                 {loading && <p>Загрузка геоданных...</p>}
