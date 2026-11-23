@@ -1,0 +1,18 @@
+{
+  "name": "Germany Traffic accidents",
+  "short_name": "Accidents",
+  "start_url": "./",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "./free-icon-accident-car-4599101-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "./free-icon-accident-car-4599101-64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    }
+  ]
+}
